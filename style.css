@@ -74,4 +74,12 @@ main {
     font-size: 20px;
 }
 
+body {
+    background-image: url('background.jpg');
+    background-size: cover;      /* Makes image cover the entire page */
+    background-position: center; /* Centers the image */
+    background-repeat: no-repeat;/* Prevents tiling */
+    background-attachment: fixed;/* Optional: makes it stay while scrolling */
+    color: white;                /* Makes text readable on dark images */
+}
 
