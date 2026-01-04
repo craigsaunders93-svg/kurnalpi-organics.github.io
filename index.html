@@ -1,156 +1,162 @@
 <!DOCTYPE html>
 <html lang="en">
 <head>
-    <meta charset="UTF-8">
-    <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Kurnalpi Organics</title>
-    <link rel="stylesheet" href="style.css">
-    <style>
-        /* ========================
-           GLOBAL BACKGROUND
-           ======================== */
-        body {
-            margin: 0;
-            font-family: Arial, sans-serif;
-            background-image: url('background.jpg'); /* new background */
-            background-size: cover;          /* cover entire viewport */
-            background-position: center;     /* center the image */
-            background-repeat: no-repeat;    /* prevent tiling */
-            background-attachment: fixed;    /* fixed while scrolling */
-            color: white;
-        }
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Kurnalpi Organics</title>
+<link rel="stylesheet" href="style.css">
+<style>
+body {
+    margin: 0;
+    font-family: Arial, sans-serif;
+    background-image: url('background.jpg');
+    background-size: cover;
+    background-position: center;
+    background-repeat: no-repeat;
+    background-attachment: fixed;
+    color: white;
+}
 
-        /* ========================
-           HEADER
-           ======================== */
-        header, .site-header {
-            background-color: rgba(47, 93, 58, 0.85); /* semi-transparent header */
-            padding: 15px 30px;
-            box-shadow: 0 2px 10px rgba(0, 0, 0, 0.15);
-        }
+header, .site-header {
+    background-color: rgba(47, 93, 58, 0.85);
+    padding: 15px 30px;
+    box-shadow: 0 2px 10px rgba(0, 0, 0, 0.15);
+}
 
-        .header-inner {
-            max-width: 1200px;
-            margin: 0 auto;
-            display: flex;
-            align-items: center;
-            justify-content: space-between;
-            flex-wrap: wrap;
-        }
+.header-inner {
+    max-width: 1200px;
+    margin: 0 auto;
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    flex-wrap: wrap;
+}
 
-        .logo {
-            height: 90px;
-            width: auto;
-        }
+.logo {
+    height: 90px !important;
+    width: auto !important;
+}
 
-        /* ========================
-           NAVIGATION
-           ======================== */
-        nav.nav {
-            margin-top: 10px;
-            display: flex;
-            flex-wrap: wrap;
-            gap: 15px;
-        }
+@media (max-width: 992px) {
+    .logo {
+        height: 70px !important;
+    }
+}
 
-        nav a {
-            color: white;
-            text-decoration: none;
-            font-weight: 600;
-            letter-spacing: 0.5px;
-        }
+@media (max-width: 600px) {
+    .logo {
+        height: 60px !important;
+        margin-bottom: 10px;
+    }
+}
 
-        nav a:hover {
-            opacity: 0.8;
-        }
+nav.nav {
+    margin-top: 10px;
+    display: flex;
+    flex-wrap: wrap;
+    gap: 15px;
+}
 
-        /* ========================
-           CART ICON
-           ======================== */
-        .cart {
-            font-size: 20px;
-            background: rgba(0,0,0,0.3); /* overlay behind icon */
-            padding: 5px 8px;
-            border-radius: 5px;
-        }
+nav a {
+    color: white;
+    text-decoration: none;
+    font-weight: 600;
+    letter-spacing: 0.5px;
+}
 
-        /* ========================
-           HERO SECTION
-           ======================== */
-        .hero {
-            position: relative;
-            min-height: 80vh;
-            display: flex;
-            flex-direction: column;
-            justify-content: center;
-            align-items: center;
-            text-align: center;
-            padding: 0 20px;
-        }
+nav a:hover {
+    opacity: 0.8;
+}
 
-        .hero::before {
-            content: "";
-            position: absolute;
-            top: 0;
-            left: 0;
-            width: 100%;
-            height: 100%;
-            background: rgba(0,0,0,0.4); /* overlay for text readability */
-            z-index: -1;
-        }
+.cart {
+    font-size: 20px;
+    background: rgba(0,0,0,0.3);
+    padding: 5px 8px;
+    border-radius: 5px;
+}
 
-        /* ========================
-           HAMBURGER MENU STYLES
-           ======================== */
-        .hamburger {
-            display: none;
-            font-size: 28px;
-            cursor: pointer;
-        }
+/* HERO / MAIN */
+.hero {
+    position: relative;
+    min-height: 80vh;
+    display: flex;
+    flex-direction: column;
+    justify-content: center;
+    align-items: center;
+    text-align: center;
+    padding: 0 20px;
+}
 
-        @media (max-width: 600px) {
-            .hamburger {
-                display: block;
-            }
+.hero::before {
+    content: "";
+    position: absolute;
+    top: 0;
+    left: 0;
+    width: 100%;
+    height: 100%;
+    background: rgba(0,0,0,0.4);
+    z-index: -1;
+}
 
-            nav.nav {
-                display: none;
-                flex-direction: column;
-                width: 100%;
-            }
+/* Ensure background shows on all pages */
+main {
+    position: relative;
+    min-height: 60vh;
+    padding: 40px;
+}
 
-            nav.nav.active {
-                display: flex;
-            }
+main::before {
+    content: "";
+    position: absolute;
+    top: 0;
+    left: 0;
+    width: 100%;
+    height: 100%;
+    background: rgba(0,0,0,0.3);
+    z-index: -1;
+}
 
-            .logo {
-                height: 60px;
-                margin-bottom: 10px;
-            }
+/* Hamburger menu */
+.hamburger {
+    display: none;
+    font-size: 28px;
+    cursor: pointer;
+}
 
-            .hero {
-                min-height: 60vh;
-                padding: 0 15px;
-            }
-        }
-    </style>
+@media (max-width: 600px) {
+    .hamburger {
+        display: block;
+    }
+
+    nav.nav {
+        display: none;
+        flex-direction: column;
+        width: 100%;
+    }
+
+    nav.nav.active {
+        display: flex;
+    }
+
+    .hero {
+        min-height: 60vh;
+        padding: 0 15px;
+    }
+}
+</style>
 </head>
 <body>
 
-<!-- ========================
-     HEADER
-     ======================== -->
 <header class="site-header">
     <div class="header-inner">
-        <a href="https://yourusername.github.io/kurnalpi-organics/">
+        <a href="index.html">
             <img src="logo.png" alt="Kurnalpi Organics Logo" class="logo">
         </a>
 
-        <!-- Hamburger menu for small screens -->
         <div class="hamburger" id="hamburger">&#9776;</div>
 
         <nav class="nav" id="nav-menu">
-            <a href="https://yourusername.github.io/kurnalpi-organics/">Home</a>
+            <a href="index.html">Home</a>
             <a href="about.html">About</a>
             <a href="products.html">Products</a>
             <a href="contact.html">Contact Us</a>
@@ -161,9 +167,6 @@
     </div>
 </header>
 
-<!-- ========================
-     HERO / MAIN CONTENT
-     ======================== -->
 <main class="hero">
     <h1>Welcome to Kurnalpi Organics</h1>
     <p>Pure. Natural. Organic.</p>
@@ -171,15 +174,12 @@
 
 <script src="cart.js"></script>
 <script>
-    // ========================
-    // HAMBURGER MENU SCRIPT
-    // ========================
-    const hamburger = document.getElementById('hamburger');
-    const navMenu = document.getElementById('nav-menu');
+const hamburger = document.getElementById('hamburger');
+const navMenu = document.getElementById('nav-menu');
 
-    hamburger.addEventListener('click', () => {
-        navMenu.classList.toggle('active');
-    });
+hamburger.addEventListener('click', () => {
+    navMenu.classList.toggle('active');
+});
 </script>
 </body>
 </html>
