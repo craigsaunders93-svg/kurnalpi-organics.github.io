@@ -1,11 +1,52 @@
 <!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Shopping Cart - Kurnalpi Organics</title>
+    <link rel="stylesheet" href="style.css">
+    <style>
+        /* ========================
+           HAMBURGER MENU STYLES
+           ======================== */
+        .hamburger {
+            display: none;
+            font-size: 28px;
+            cursor: pointer;
+        }
+
+        @media (max-width: 600px) {
+            .hamburger {
+                display: block;
+            }
+
+            nav.nav {
+                display: none;
+                flex-direction: column;
+                width: 100%;
+            }
+
+            nav.nav.active {
+                display: flex;
+            }
+        }
+    </style>
+</head>
+<body>
+
+<!-- ========================
+     HEADER
+     ======================== -->
 <header class="site-header">
     <div class="header-inner">
         <a href="https://yourusername.github.io/kurnalpi-organics/">
-            <img src="logo.png" alt="Kurnalpi Organics Logo" width="180">
+            <img src="logo.png" alt="Kurnalpi Organics Logo" class="logo">
         </a>
 
-        <nav class="nav">
+        <!-- Hamburger menu for small screens -->
+        <div class="hamburger" id="hamburger">&#9776;</div>
+
+        <nav class="nav" id="nav-menu">
             <a href="https://yourusername.github.io/kurnalpi-organics/">Home</a>
             <a href="about.html">About</a>
             <a href="products.html">Products</a>
@@ -17,15 +58,37 @@
     </div>
 </header>
 
-<script src="cart.js"></script>
-
-
+<!-- ========================
+     MAIN CONTENT
+     ======================== -->
 <main>
     <h1>Your Shopping Cart</h1>
-    <p>Your cart is currently empty.</p>
+    <p id="cart-message">Your cart is currently empty.</p>
     <!-- Later you can add products here with prices and checkout button -->
 </main>
 
+<script src="cart.js"></script>
+<script>
+    // ========================
+    // HAMBURGER MENU SCRIPT
+    // ========================
+    const hamburger = document.getElementById('hamburger');
+    const navMenu = document.getElementById('nav-menu');
+
+    hamburger.addEventListener('click', () => {
+        navMenu.classList.toggle('active');
+    });
+
+    // ========================
+    // OPTIONAL: Update empty cart message dynamically
+    // ========================
+    const cartMessage = document.getElementById('cart-message');
+    const cartTotal = parseFloat(localStorage.getItem('cartTotal') || 0);
+
+    if (cartTotal > 0 && cartMessage) {
+        cartMessage.textContent = `You have items in your cart totaling R${cartTotal.toFixed(2)}.`;
+    }
+</script>
+
 </body>
 </html>
-
