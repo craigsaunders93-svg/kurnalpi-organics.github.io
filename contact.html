@@ -4,8 +4,28 @@
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>Contact Us - Kurnalpi Organics</title>
+
     <link rel="stylesheet" href="style.css">
+
     <style>
+        /* ========================
+           PAGE + FOOTER SUPPORT
+           ======================== */
+        html, body {
+            height: 100%;
+            margin: 0;
+        }
+
+        .page-wrapper {
+            min-height: 100%;
+            display: flex;
+            flex-direction: column;
+        }
+
+        main {
+            flex: 1; /* pushes footer to bottom */
+        }
+
         /* ========================
            HAMBURGER MENU STYLES
            ======================== */
@@ -30,9 +50,24 @@
                 display: flex;
             }
         }
+
+        /* ========================
+           FOOTER
+           ======================== */
+        footer {
+            text-align: center;
+            padding: 15px 0;
+            background-color: rgba(47, 93, 58, 0.85);
+            color: white;
+            font-size: 14px;
+            font-weight: bold;
+        }
     </style>
 </head>
+
 <body>
+
+<div class="page-wrapper">
 
 <!-- ========================
      HEADER
@@ -43,7 +78,6 @@
             <img src="logo.png" alt="Kurnalpi Organics Logo" class="logo">
         </a>
 
-        <!-- Hamburger menu for small screens -->
         <div class="hamburger" id="hamburger">&#9776;</div>
 
         <nav class="nav" id="nav-menu">
@@ -63,14 +97,25 @@
      ======================== -->
 <main>
     <h1>Contact Us</h1>
-    <p>Email: <a href="mailto:info@kurnalpiorganics.com">info@kurnalpiorganics.com</a></p>
+    <p>
+        Email:
+        <a href="mailto:info@kurnalpiorganics.com">
+            info@kurnalpiorganics.com
+        </a>
+    </p>
 </main>
+
+<!-- ========================
+     FOOTER
+     ======================== -->
+<footer>
+    &copy; 2026 Kurnalpi Organics. All rights reserved.
+</footer>
+
+</div>
 
 <script src="cart.js"></script>
 <script>
-    // ========================
-    // HAMBURGER MENU SCRIPT
-    // ========================
     const hamburger = document.getElementById('hamburger');
     const navMenu = document.getElementById('nav-menu');
 
