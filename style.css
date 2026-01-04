@@ -1,6 +1,10 @@
 /* ========================
    GLOBAL STYLES
    ======================== */
+html, body {
+    height: 100%; /* needed for smart footer */
+}
+
 body {
     margin: 0;
     font-family: Arial, sans-serif;
@@ -10,6 +14,33 @@ body {
     background-repeat: no-repeat;            /* no tiling */
     background-attachment: fixed;            /* fixed on scroll */
     color: white;
+}
+
+/* ========================
+   PAGE WRAPPER (for footer)
+   ======================== */
+.page-wrapper {
+    min-height: 100%;       /* wrapper takes full viewport */
+    display: flex;
+    flex-direction: column;
+}
+
+main {
+    flex: 1;                /* main content expands to fill space */
+    position: relative;     /* for overlay */
+    padding: 40px;
+    min-height: 60vh;       /* ensures overlay covers main */
+}
+
+main::before {
+    content: "";
+    position: absolute;
+    top: 0;
+    left: 0;
+    width: 100%;
+    height: 100%;
+    background: rgba(0,0,0,0.3); /* dark overlay for readability */
+    z-index: -1;
 }
 
 /* ========================
@@ -83,26 +114,6 @@ nav a:hover, .nav a:hover {
 }
 
 /* ========================
-   MAIN CONTENT
-   ======================== */
-main {
-    position: relative;   /* for overlay */
-    padding: 40px;
-    min-height: 60vh;     /* ensures overlay covers main */
-}
-
-main::before {
-    content: "";
-    position: absolute;
-    top: 0;
-    left: 0;
-    width: 100%;
-    height: 100%;
-    background: rgba(0,0,0,0.3); /* dark overlay for readability */
-    z-index: -1;
-}
-
-/* ========================
    HERO SECTION
    ======================== */
 .hero {
@@ -125,68 +136,6 @@ main::before {
     height: 100%;
     background: rgba(0,0,0,0.4); /* overlay for text readability */
     z-index: -1;
-}
-
-/* ========================
-   RESPONSIVE STYLES
-   ======================== */
-@media (max-width: 992px) {
-    .header-inner {
-        flex-direction: column;
-        align-items: flex-start;
-    }
-
-    nav, .nav {
-        width: 100%;
-        margin-top: 10px;
-        justify-content: flex-start;
-        gap: 10px;
-    }
-}
-
-@media (max-width: 600px) {
-    header, .site-header {
-        padding: 10px 15px;
-    }
-
-    nav, .nav {
-        flex-direction: column;
-        gap: 8px;
-    }
-
-    .hero {
-        min-height: 60vh;
-        padding: 0 15px;
-    }
-
-    main {
-        padding: 20px;
-    }
-}
-
-/* ========================
-   HAMBURGER MENU
-   ======================== */
-.hamburger {
-    display: none;
-    font-size: 28px;
-    cursor: pointer;
-}
-
-@media (max-width: 600px) {
-    .hamburger {
-        display: block;
-    }
-
-    nav.nav {
-        display: none;
-        flex-direction: column;
-        width: 100%;
-    }
-
-    nav.nav.active {
-        display: flex;
-    }
 }
 
 /* ========================
@@ -231,8 +180,42 @@ main::before {
     background: rgba(47, 93, 58, 1);
 }
 
-/* Responsive for categories */
+/* ========================
+   RESPONSIVE STYLES
+   ======================== */
+@media (max-width: 992px) {
+    .header-inner {
+        flex-direction: column;
+        align-items: flex-start;
+    }
+
+    nav, .nav {
+        width: 100%;
+        margin-top: 10px;
+        justify-content: flex-start;
+        gap: 10px;
+    }
+}
+
 @media (max-width: 600px) {
+    header, .site-header {
+        padding: 10px 15px;
+    }
+
+    nav, .nav {
+        flex-direction: column;
+        gap: 8px;
+    }
+
+    .hero {
+        min-height: 60vh;
+        padding: 0 15px;
+    }
+
+    main {
+        padding: 20px;
+    }
+
     .product-categories {
         flex-direction: column;
         align-items: center;
@@ -240,5 +223,58 @@ main::before {
 
     .category-card {
         width: 70%;
+    }
+}
+
+/* ========================
+   HAMBURGER MENU
+   ======================== */
+.hamburger {
+    display: none;
+    font-size: 28px;
+    cursor: pointer;
+}
+
+@media (max-width: 600px) {
+    .hamburger {
+        display: block;
+    }
+
+    nav.nav {
+        display: none;
+        flex-direction: column;
+        width: 100%;
+    }
+
+    nav.nav.active {
+        display: flex;
+    }
+}
+
+/* ========================
+   SMART FOOTER
+   ======================== */
+footer {
+    text-align: center;
+    padding: 15px 0;
+    background-color: rgba(47, 93, 58, 0.85); /* matches header */
+    color: white;
+    font-size: 14px;
+    box-shadow: 0 -2px 10px rgba(0, 0, 0, 0.15);
+}
+
+footer a {
+    color: white;
+    text-decoration: none;
+}
+
+footer a:hover {
+    text-decoration: underline;
+}
+
+@media (max-width: 600px) {
+    footer {
+        padding: 10px 5px;
+        font-size: 13px;
     }
 }
