@@ -2,19 +2,51 @@
 <html lang="en">
 <head>
     <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>Kurnalpi Organics</title>
     <link rel="stylesheet" href="style.css">
+    <style>
+        /* ========================
+           HAMBURGER MENU STYLES
+           ======================== */
+        .hamburger {
+            display: none;
+            font-size: 28px;
+            cursor: pointer;
+        }
+
+        @media (max-width: 600px) {
+            .hamburger {
+                display: block;
+            }
+
+            nav.nav {
+                display: none;
+                flex-direction: column;
+                width: 100%;
+            }
+
+            nav.nav.active {
+                display: flex;
+            }
+        }
+    </style>
 </head>
 <body>
 
-<!-- HEADER (consistent on all pages) -->
+<!-- ========================
+     HEADER
+     ======================== -->
 <header class="site-header">
     <div class="header-inner">
         <a href="https://yourusername.github.io/kurnalpi-organics/">
-            <img src="logo.png" alt="Kurnalpi Organics Logo" width="180">
+            <img src="logo.png" alt="Kurnalpi Organics Logo" class="logo">
         </a>
 
-        <nav class="nav">
+        <!-- Hamburger menu for small screens -->
+        <div class="hamburger" id="hamburger">&#9776;</div>
+
+        <nav class="nav" id="nav-menu">
             <a href="https://yourusername.github.io/kurnalpi-organics/">Home</a>
             <a href="about.html">About</a>
             <a href="products.html">Products</a>
@@ -26,12 +58,25 @@
     </div>
 </header>
 
-<!-- HERO / MAIN CONTENT -->
+<!-- ========================
+     HERO / MAIN CONTENT
+     ======================== -->
 <main class="hero">
     <h1>Welcome to Kurnalpi Organics</h1>
     <p>Pure. Natural. Organic.</p>
 </main>
 
 <script src="cart.js"></script>
+<script>
+    // ========================
+    // HAMBURGER MENU SCRIPT
+    // ========================
+    const hamburger = document.getElementById('hamburger');
+    const navMenu = document.getElementById('nav-menu');
+
+    hamburger.addEventListener('click', () => {
+        navMenu.classList.toggle('active');
+    });
+</script>
 </body>
 </html>
