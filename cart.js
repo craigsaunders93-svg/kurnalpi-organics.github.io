@@ -1,5 +1,6 @@
+
 // ========================
-// CART SCRIPT
+// CART.JS
 // ========================
 
 // Get cart from localStorage
@@ -16,11 +17,7 @@ function saveCart(cart) {
 function updateCartDisplay() {
     const cart = getCart();
     let total = 0;
-
-    cart.forEach(item => {
-        total += item.price * item.quantity;
-    });
-
+    cart.forEach(item => total += item.price * item.quantity);
     const cartTotalElement = document.getElementById("cart-total");
     if (cartTotalElement) {
         cartTotalElement.textContent = "R" + total.toFixed(2);
@@ -28,26 +25,19 @@ function updateCartDisplay() {
 }
 
 // Add item to cart
-function addToCart(name, price, pack = "", quantity = 1) {
+function addToCart(name, price, pack = "", quantity = 1, image = "") {
     if (!name || isNaN(price) || price < 0 || quantity < 1) {
         console.error("Invalid cart data");
         return;
     }
 
     let cart = getCart();
-
-    // Check if same product with same pack already exists
     const existingItem = cart.find(item => item.name === name && item.pack === pack);
 
     if (existingItem) {
         existingItem.quantity += quantity;
     } else {
-        cart.push({
-            name: name,
-            price: price,
-            pack: pack,
-            quantity: quantity
-        });
+        cart.push({ name, price, pack, quantity, image });
     }
 
     saveCart(cart);
@@ -55,129 +45,95 @@ function addToCart(name, price, pack = "", quantity = 1) {
     alert(`Added ${quantity} x ${name} to cart!`);
 }
 
-// Render cart page items (cart.html)
+// ========================
+// RENDER CART PAGE
+// ========================
 function renderCartPage() {
+    const cartItemsContainer = document.getElementById("cart-items");
+    const cartGrandTotal = document.getElementById("cart-grand-total");
+    const cartMessage = document.getElementById("cart-message");
+
+    if (!cartItemsContainer || !cartGrandTotal) return;
+
     const cart = getCart();
-    const container = document.getElementById("cart-container");
-    const totalDisplay = document.getElementById("cart-total-display");
-
-    if (!container || !totalDisplay) return;
-
-    container.innerHTML = "";
+    cartItemsContainer.innerHTML = "";
+    let total = 0;
 
     if (cart.length === 0) {
-        container.innerHTML = '<div class="empty-cart">Your cart is empty.</div>';
-        totalDisplay.textContent = "";
-        updateCartDisplay();
+        if (cartMessage) cartMessage.textContent = "Your cart is currently empty.";
+        cartGrandTotal.textContent = "Total: R0";
         return;
     }
 
-    let total = 0;
+    if (cartMessage) cartMessage.textContent = "";
 
     cart.forEach((item, index) => {
-        total += item.price * item.quantity;
+        const subtotal = item.price * item.quantity;
+        total += subtotal;
 
-        const div = document.createElement("div");
-        div.className = "cart-item";
-
-        div.innerHTML = `
-            <img src="images/${item.name.toLowerCase().replace(/ /g, "-")}.png" alt="${item.name}">
-            <div class="cart-details">
-                <h3>${item.name}</h3>
-                <p>${item.pack}</p>
-                <div class="cart-quantity">
-                    <button class="minus">−</button>
-                    <span class="qty">${item.quantity}</span>
-                    <button class="plus">+</button>
-                    <button class="remove">Remove</button>
-                </div>
-            </div>
-            <div class="item-total">R${(item.price * item.quantity).toFixed(2)}</div>
+        const row = document.createElement("tr");
+        row.classList.add("cart-item");
+        row.innerHTML = `
+            <td>
+                <img src="${item.image}" alt="${item.name}" width="80" height="80">
+                <div>${item.name}</div>
+            </td>
+            <td>${item.pack || "-"}</td>
+            <td>R${item.price.toFixed(2)}</td>
+            <td>
+                <button class="qty-btn minus" data-index="${index}">−</button>
+                <span class="qty">${item.quantity}</span>
+                <button class="qty-btn plus" data-index="${index}">+</button>
+            </td>
+            <td>R${subtotal.toFixed(2)}</td>
+            <td>
+                <button class="remove-btn" data-index="${index}">Remove</button>
+            </td>
         `;
-
-        const minusBtn = div.querySelector(".minus");
-        const plusBtn = div.querySelector(".plus");
-        const removeBtn = div.querySelector(".remove");
-        const qtyDisplay = div.querySelector(".qty");
-
-        minusBtn.addEventListener("click", () => {
-            if (item.quantity > 1) {
-                item.quantity--;
-            } else {
-                cart.splice(index, 1);
-            }
-            saveCart(cart);
-            renderCartPage();
-            updateCartDisplay();
-        });
-
-        plusBtn.addEventListener("click", () => {
-            item.quantity++;
-            saveCart(cart);
-            renderCartPage();
-            updateCartDisplay();
-        });
-
-        removeBtn.addEventListener("click", () => {
-            cart.splice(index, 1);
-            saveCart(cart);
-            renderCartPage();
-            updateCartDisplay();
-        });
-
-        container.appendChild(div);
+        cartItemsContainer.appendChild(row);
     });
 
-    totalDisplay.textContent = "Total: R" + total.toFixed(2);
+    cartGrandTotal.textContent = `Total: R${total.toFixed(2)}`;
     updateCartDisplay();
+
+    attachCartActions();
 }
 
 // ========================
-// HANDLE PRODUCT BUTTONS ON PRODUCTS PAGE
+// ATTACH BUTTON ACTIONS
 // ========================
-document.addEventListener("DOMContentLoaded", () => {
-    // Product page quantity + Add to Cart
-    document.querySelectorAll(".product-card").forEach(card => {
-        const minusBtn = card.querySelector(".qty-btn.minus");
-        const plusBtn = card.querySelector(".qty-btn.plus");
-        const qtyDisplay = card.querySelector(".qty");
-        const addBtn = card.querySelector(".add-to-cart");
+function attachCartActions() {
+    const cart = getCart();
 
-        let quantity = 1;
-
-        if (minusBtn && plusBtn && qtyDisplay) {
-            minusBtn.addEventListener("click", () => {
-                if (quantity > 1) {
-                    quantity--;
-                    qtyDisplay.textContent = quantity;
-                }
-            });
-            plusBtn.addEventListener("click", () => {
-                quantity++;
-                qtyDisplay.textContent = quantity;
-            });
-        }
-
-        if (addBtn) {
-            addBtn.addEventListener("click", () => {
-                const name = addBtn.dataset.name;
-                const price = Number(addBtn.dataset.price);
-                const pack = addBtn.dataset.pack || "";
-
-                addToCart(name, price, pack, quantity);
-
-                // reset quantity
-                quantity = 1;
-                if (qtyDisplay) qtyDisplay.textContent = 1;
-            });
-        }
+    // Quantity buttons
+    document.querySelectorAll(".qty-btn").forEach(btn => {
+        btn.onclick = () => {
+            const index = parseInt(btn.dataset.index);
+            if (btn.classList.contains("minus") && cart[index].quantity > 1) {
+                cart[index].quantity--;
+            }
+            if (btn.classList.contains("plus")) {
+                cart[index].quantity++;
+            }
+            saveCart(cart);
+            renderCartPage();
+        };
     });
 
-    // Initialize header cart total
-    updateCartDisplay();
+    // Remove buttons
+    document.querySelectorAll(".remove-btn").forEach(btn => {
+        btn.onclick = () => {
+            const index = parseInt(btn.dataset.index);
+            cart.splice(index, 1);
+            saveCart(cart);
+            renderCartPage();
+        };
+    });
+}
 
-    // If on cart page, render cart
-    if (document.getElementById("cart-container")) {
-        renderCartPage();
-    }
+// ========================
+// INITIALIZE ON PAGE LOAD
+// ========================
+document.addEventListener("DOMContentLoaded", () => {
+    renderCartPage();
 });
