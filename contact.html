@@ -184,17 +184,19 @@ main::before {
     margin: 0 10px;
     width: 40px;
     height: 40px;
-    transition: 0.3s;
+    transition: transform 0.3s ease, fill 0.3s ease;
 }
 
 .social-icons svg {
     fill: white;
     width: 100%;
     height: 100%;
+    transition: transform 0.3s ease, fill 0.3s ease;
 }
 
 .social-icons a:hover svg {
     fill: #ffd700; /* gold highlight */
+    transform: scale(1.2) rotate(-10deg);
 }
 
 /* ========================
@@ -279,7 +281,7 @@ footer {
         <p><span class="contact-icon">📍</span> Address: 123 Main Street, Johannesburg, South Africa</p>
         <p><span class="contact-icon">⏰</span> Business Hours: Mon – Fri, 9:00 AM – 5:00 PM</p>
 
-        <!-- Social Media Icons (SVGs) -->
+        <!-- Social Media Icons (SVGs with hover animation) -->
         <div class="social-icons">
             <!-- WhatsApp -->
             <a href="https://wa.me/27123456789" target="_blank" title="WhatsApp">
