@@ -4,35 +4,26 @@
 <meta charset="UTF-8">
 <meta name="viewport" content="width=device-width, initial-scale=1.0">
 <title>Home Fragrance - Kurnalpi Organics</title>
-
 <link rel="stylesheet" href="style.css">
 
 <style>
 /* ========================
-   PAGE + FOOTER SUPPORT
+   MAIN CONTENT
    ======================== */
-html, body {
-    height: 100%;
-    margin: 0;
-}
-
-.page-wrapper {
-    min-height: 100%;
-    display: flex;
-    flex-direction: column;
-}
-
 main {
-    flex: 1;
     position: relative;
+    min-height: 60vh;
     padding: 40px;
 }
 
 main::before {
     content: "";
     position: absolute;
-    inset: 0;
-    background: rgba(0,0,0,0.35);
+    top: 0;
+    left: 0;
+    width: 100%;
+    height: 100%;
+    background: rgba(0,0,0,0.3);
     z-index: -1;
 }
 
@@ -70,19 +61,36 @@ main::before {
     margin: 5px 0;
 }
 
-.pack-size {
-    font-size: 13px;
-    font-style: italic;
-    opacity: 0.9;
-}
-
 .price {
     font-size: 18px;
     font-weight: bold;
     margin: 10px 0;
 }
 
-.product-card button {
+.qty-control {
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    margin-bottom: 10px;
+}
+
+.qty-btn {
+    padding: 5px 10px;
+    margin: 0 5px;
+    border: none;
+    border-radius: 5px;
+    background: #1f4d30;
+    color: #fff;
+    cursor: pointer;
+}
+
+.qty {
+    min-width: 20px;
+    text-align: center;
+}
+
+/* Add to Cart button */
+.add-to-cart {
     background: #1f4d30;
     color: white;
     border: none;
@@ -92,7 +100,7 @@ main::before {
     font-size: 14px;
 }
 
-.product-card button:hover {
+.add-to-cart:hover {
     background: #163823;
 }
 
@@ -107,24 +115,24 @@ footer {
     font-size: 14px;
     font-weight: bold;
 }
+
+/* Responsive */
+@media (max-width:600px) {
+    .products {
+        grid-template-columns: 1fr;
+    }
+}
 </style>
 </head>
-
 <body>
 
 <div class="page-wrapper">
 
-<!-- ========================
-     HEADER
-     ======================== -->
+<!-- HEADER -->
 <header class="site-header">
     <div class="header-inner">
-        <a href="index.html">
-            <img src="logo.png" alt="Kurnalpi Organics Logo" class="logo">
-        </a>
-
+        <a href="index.html"><img src="logo.png" alt="Kurnalpi Organics Logo" class="logo"></a>
         <div class="hamburger" id="hamburger">&#9776;</div>
-
         <nav class="nav" id="nav-menu">
             <a href="index.html">Home</a>
             <a href="about.html">About</a>
@@ -135,47 +143,80 @@ footer {
     </div>
 </header>
 
-<!-- ========================
-     MAIN CONTENT
-     ======================== -->
+<!-- MAIN CONTENT -->
 <main>
     <h1>Home Fragrance</h1>
     <p>Natural fragrances to refresh and relax your living space.</p>
 
     <div class="products">
 
-        <!-- PRODUCT 1 -->
-       <main>
-   <main>
-    <h1>Home Fragrance</h1>
-    <p>Natural fragrances to refresh and relax your living space.</p>
-
-    <div class="products">
-
-        <!-- PRODUCT 1 -->
+        <!-- Lavender Incense Sticks -->
         <div class="product-card">
-            <img src="lavender-incense.png" alt="Lavender Incense Sticks">
+            <img src="images/lavender-incense.png" alt="Lavender Incense Sticks">
             <h3>Lavender Incense Sticks</h3>
             <p>Calming lavender incense sticks.</p>
             <p class="pack-size">Pack of 20 sticks</p>
             <div class="price">R30</div>
-
-            <!-- Quantity Selector -->
             <div class="qty-control">
                 <button class="qty-btn minus">−</button>
                 <span class="qty">1</span>
                 <button class="qty-btn plus">+</button>
             </div>
+            <button class="add-to-cart" data-name="Lavender Incense Sticks" data-price="30" data-pack="Pack of 20 sticks">
+                Add to Cart
+            </button>
+        </div>
 
-            <!-- Add to Cart -->
-            <button 
-                class="add-to-cart"
-                data-name="Lavender Incense Sticks"
-                data-price="30"
-                data-pack="Pack of 20 sticks">
+        <!-- Other products example -->
+        <div class="product-card">
+            <img src="images/citrus-spray.png" alt="Citrus Room Spray">
+            <h3>Citrus Room Spray</h3>
+            <p>Fresh citrus spray for instant room refresh.</p>
+            <div class="price">R95</div>
+            <div class="qty-control">
+                <button class="qty-btn minus">−</button>
+                <span class="qty">1</span>
+                <button class="qty-btn plus">+</button>
+            </div>
+            <button class="add-to-cart" data-name="Citrus Room Spray" data-price="95" data-pack="">
+                Add to Cart
+            </button>
+        </div>
+
+        <div class="product-card">
+            <img src="images/eucalyptus-melts.png" alt="Eucalyptus Wax Melts">
+            <h3>Eucalyptus Wax Melts</h3>
+            <p>Invigorating eucalyptus scent for wax burners.</p>
+            <div class="price">R85</div>
+            <div class="qty-control">
+                <button class="qty-btn minus">−</button>
+                <span class="qty">1</span>
+                <button class="qty-btn plus">+</button>
+            </div>
+            <button class="add-to-cart" data-name="Eucalyptus Wax Melts" data-price="85" data-pack="">
                 Add to Cart
             </button>
         </div>
 
     </div>
 </main>
+
+<!-- FOOTER -->
+<footer>
+    &copy; 2026 Kurnalpi Organics. All rights reserved.
+</footer>
+
+</div>
+
+<!-- SCRIPTS -->
+<script src="cart.js"></script>
+<script>
+const hamburger = document.getElementById('hamburger');
+const navMenu = document.getElementById('nav-menu');
+hamburger.addEventListener('click', () => {
+    navMenu.classList.toggle('active');
+});
+</script>
+
+</body>
+</html>
