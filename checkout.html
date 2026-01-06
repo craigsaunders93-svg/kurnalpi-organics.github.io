@@ -92,7 +92,7 @@ th, td {
 
 .checkout-btn {
     width: 100%;
-    margin-top: 15px;
+    margin-top: 12px;
     padding: 12px;
     font-size: 16px;
     cursor: pointer;
@@ -108,6 +108,15 @@ th, td {
 .email {
     background: #ffd700;
     color: black;
+}
+
+.eft-box {
+    display: none;
+    margin-top: 15px;
+    background: #fff;
+    color: #000;
+    padding: 20px;
+    border-radius: 8px;
 }
 </style>
 </head>
@@ -133,6 +142,7 @@ th, td {
         <!-- CUSTOMER DETAILS -->
         <div>
             <h2>Your Details</h2>
+
             <label>Name</label>
             <input id="name" required>
 
@@ -152,6 +162,7 @@ th, td {
         <!-- ORDER SUMMARY -->
         <div>
             <h2>Order Summary</h2>
+
             <table>
                 <thead>
                     <tr>
@@ -176,6 +187,28 @@ th, td {
             <button class="checkout-btn email" onclick="checkoutEmail()">
                 Checkout via Email
             </button>
+
+            <button class="checkout-btn email" onclick="showEFT()">
+                Pay via EFT (Bank Transfer)
+            </button>
+
+            <!-- EFT DETAILS -->
+            <div id="eft-box" class="eft-box">
+                <h3>Bank Transfer (EFT)</h3>
+
+                <p><strong>Bank:</strong> FNB</p>
+                <p><strong>Account Name:</strong> Kurnalpi Organics</p>
+                <p><strong>Account Number:</strong> 1234567890</p>
+                <p><strong>Branch Code:</strong> 250655</p>
+                <p><strong>Account Type:</strong> Cheque</p>
+
+                <p style="margin-top:10px;">
+                    <strong>Payment Reference:</strong>
+                    <span id="eft-reference"></span>
+                </p>
+
+                <p>Please use this reference when making payment.</p>
+            </div>
         </div>
     </div>
 </div>
@@ -217,6 +250,10 @@ function loadCheckout() {
         "R" + (subtotal + SHIPPING_FEE).toFixed(2);
 }
 
+function generateReference() {
+    return "KO-" + Math.floor(100000 + Math.random() * 900000);
+}
+
 function buildMessage() {
     const cart = getCart();
     let message = "ORDER DETAILS:%0A%0A";
@@ -235,7 +272,9 @@ function buildMessage() {
     message += `Name: ${name.value}%0A`;
     message += `Phone: ${phone.value}%0A`;
     message += `Address: ${address.value}%0A`;
-    if (notes.value) message += `Notes: ${notes.value}`;
+
+    const ref = document.getElementById("eft-reference").textContent;
+    if (ref) message += `Payment Ref: ${ref}%0A`;
 
     return message;
 }
@@ -252,9 +291,14 @@ function checkoutEmail() {
         `mailto:info@example.com?subject=New Order&body=${buildMessage()}`;
 }
 
+function showEFT() {
+    const ref = generateReference();
+    document.getElementById("eft-reference").textContent = ref;
+    document.getElementById("eft-box").style.display = "block";
+}
+
 document.addEventListener("DOMContentLoaded", loadCheckout);
 </script>
 
 </body>
 </html>
-
