@@ -38,38 +38,57 @@ main {
     text-align: center;
 }
 
-.categories-container {
+.products {
     max-width: 1200px;
     margin: auto;
     display: grid;
-    grid-template-columns: repeat(auto-fit, minmax(200px, 1fr));
-    gap: 20px;
+    grid-template-columns: repeat(auto-fit, minmax(250px, 1fr));
+    gap: 25px;
 }
 
-.category-card {
-    background: rgba(47, 93, 58, 0.9);
+.product-card {
+    background: rgba(47, 93, 58, 0.85);
     padding: 20px;
-    border-radius: 10px;
+    border-radius: 12px;
     text-align: center;
-    cursor: pointer;
-    transition: 0.3s;
-    display: block; /* Important so the <a> fills the card */
+    box-shadow: 0 6px 12px rgba(0,0,0,0.3);
 }
 
-.category-card:hover {
-    background: rgba(47, 93, 58, 1);
-}
-
-.category-card img {
-    width: 150px;
-    height: 150px;
-    object-fit: cover;
-    border-radius: 8px;
+.product-card img {
+    width: 120px;
+    height: 120px;
+    object-fit: contain;
     margin-bottom: 10px;
 }
 
-.category-card h3 {
+.product-card h3 {
     margin: 10px 0 5px;
+}
+
+.price {
+    font-size: 18px;
+    font-weight: bold;
+    margin: 10px 0;
+}
+
+.product-card input[type="number"] {
+    width: 60px;
+    padding: 5px;
+    margin: 5px 0;
+}
+
+.product-card button {
+    background: #1f4d30;
+    color: white;
+    border: none;
+    padding: 10px 16px;
+    border-radius: 6px;
+    cursor: pointer;
+    font-size: 14px;
+}
+
+.product-card button:hover {
+    background: #163823;
 }
 
 footer {
@@ -96,70 +115,72 @@ footer {
 </header>
 
 <main>
-    <h1 style="margin-bottom:30px;">Our Product Categories</h1>
-    <div class="categories-container" id="categories-container"></div>
+    <h1>Our Products</h1>
+    <div class="products" id="product-container"></div>
 </main>
 
 <footer>
     &copy; 2026 Kurnalpi Organics
 </footer>
 
+<script src="cart.js"></script>
 <script>
 // ========================
-// PRODUCT CATEGORIES
+// PRODUCT DATA
 // ========================
-const categories = [
-    {name: "Soaps", image: "soap1.png", page: "soaps.html"},
-    {name: "Seedlings", image: "seedlings.jpg", page: "seedlings.html"},
-    {name: "Garden", image: "garden.jpg", page: "garden.html"},
-    {name: "Home Fragrance", image: "home-fragrance.jpg", page: "home-fragrance.html"},
-    {name: "Garden Ornaments", image: "garden-ornaments.jpg", page: "garden-ornaments.html"},
-    {name: "Arts & Crafts", image: "arts-crafts.jpg", page: "arts-crafts.html"},
-    {name: "Appeal", image: "appeal.jpg", page: "appeal.html"}
+const products = [
+    { name: "Lavender Soap", price: 60, image: "soap1.png", pack: "Single" },
+    { name: "Activated Charcoal Soap", price: 70, image: "soap2.png", pack: "Single" },
+    { name: "Honey & Oat Soap", price: 65, image: "soap3.png", pack: "Single" },
+    { name: "Lemon Fresh Soap", price: 60, image: "soap4.png", pack: "Single" },
+    { name: "Home Fragrance Candle", price: 50, image: "home-fragrance.jpg", pack: "Single" }
 ];
 
 // ========================
-// RENDER CATEGORIES (Single-click fix)
+// RENDER PRODUCTS
 // ========================
-function renderCategories() {
-    const container = document.getElementById("categories-container");
+function renderProducts() {
+    const container = document.getElementById("product-container");
     container.innerHTML = "";
 
-    categories.forEach(cat => {
-        const cardLink = document.createElement("a");
-        cardLink.href = cat.page;
-        cardLink.className = "category-card";
-        cardLink.style.textDecoration = "none";
-        cardLink.style.color = "inherit";
+    products.forEach((product, index) => {
+        const card = document.createElement("div");
+        card.className = "product-card";
 
-        cardLink.innerHTML = `
-            <img src="${cat.image}" alt="${cat.name}">
-            <h3>${cat.name}</h3>
+        card.innerHTML = `
+            <img src="${product.image}" alt="${product.name}">
+            <h3>${product.name}</h3>
+            <div class="price">R${product.price.toFixed(2)}</div>
+            <input type="number" min="1" value="1" id="qty-${index}">
+            <button onclick="addProductToCart(${index})">Add to Cart</button>
         `;
 
-        container.appendChild(cardLink);
+        container.appendChild(card);
     });
 }
 
 // ========================
-// CART HEADER UPDATE
+// ADD TO CART HANDLER
 // ========================
-function updateCartTotal() {
-    const cart = JSON.parse(localStorage.getItem("cart")) || [];
-    let total = 0;
-    cart.forEach(item => total += item.price * item.quantity);
-    const cartTotalElement = document.getElementById("cart-total");
-    if (cartTotalElement) cartTotalElement.textContent = "R" + total.toFixed(2);
+function addProductToCart(index) {
+    const product = products[index];
+    const qtyInput = document.getElementById(`qty-${index}`);
+    let quantity = parseInt(qtyInput.value, 10);
+
+    if (isNaN(quantity) || quantity < 1) quantity = 1;
+
+    addToCart(product.name, product.price, product.pack, quantity, product.image);
 }
 
 // ========================
 // INITIALIZE
 // ========================
 document.addEventListener("DOMContentLoaded", () => {
-    renderCategories();
-    updateCartTotal();
+    renderProducts();
+    if (typeof updateCartDisplay === "function") updateCartDisplay();
 });
 </script>
 
 </body>
 </html>
+
