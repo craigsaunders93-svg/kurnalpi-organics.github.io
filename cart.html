@@ -68,6 +68,8 @@ th {
     display: block;
     margin: auto;
     border-radius: 6px;
+    width: 80px;
+    height: 80px;
 }
 
 .qty-btn {
@@ -118,7 +120,6 @@ th {
 </head>
 
 <body>
-
 <div class="page-wrapper">
 
 <header class="site-header">
@@ -126,7 +127,6 @@ th {
         <a href="index.html">
             <img src="logo.png" class="logo" alt="Kurnalpi Organics">
         </a>
-
         <nav class="nav">
             <a href="index.html">Home</a>
             <a href="about.html">About</a>
@@ -157,13 +157,13 @@ th {
                 </tr>
             </thead>
             <tbody id="cart-items">
-                <!-- JS injects items here -->
+                <!-- Items will be injected here -->
             </tbody>
         </table>
 
         <div class="cart-footer">
             <h2 id="cart-grand-total">Total: R0.00</h2>
-            <button class="checkout-btn">Proceed to Checkout</button>
+            <button class="checkout-btn" id="proceed-checkout">Proceed to Checkout</button>
         </div>
     </div>
 </main>
@@ -172,9 +172,113 @@ th {
     &copy; 2026 Kurnalpi Organics. All rights reserved.
 </footer>
 
-</div>
+<script>
+// ======== CART LOGIC ========
+function getCart() {
+    return JSON.parse(localStorage.getItem("cart")) || [];
+}
 
-<script src="cart.js"></script>
+function saveCart(cart) {
+    localStorage.setItem("cart", JSON.stringify(cart));
+}
+
+function updateCartDisplay() {
+    const cart = getCart();
+    let total = 0;
+    cart.forEach(item => total += item.price * item.quantity);
+    const cartTotalElement = document.getElementById("cart-total");
+    if (cartTotalElement) {
+        cartTotalElement.textContent = "R" + total.toFixed(2);
+    }
+}
+
+function renderCart() {
+    const cart = getCart();
+    const tbody = document.getElementById("cart-items");
+    const message = document.getElementById("cart-message");
+    let grandTotal = 0;
+
+    tbody.innerHTML = "";
+
+    if (cart.length === 0) {
+        message.textContent = "Your cart is empty.";
+        document.getElementById("cart-grand-total").textContent = "Total: R0.00";
+        updateCartDisplay();
+        return;
+    }
+
+    message.textContent = "";
+
+    cart.forEach((item, index) => {
+        const subtotal = item.price * item.quantity;
+        grandTotal += subtotal;
+
+        const row = document.createElement("tr");
+        row.classList.add("cart-item");
+        row.innerHTML = `
+            <td>${item.name}</td>
+            <td>${item.pack || "-"}</td>
+            <td>R${item.price.toFixed(2)}</td>
+            <td>
+                <button class="qty-btn minus" data-index="${index}">−</button>
+                <span>${item.quantity}</span>
+                <button class="qty-btn plus" data-index="${index}">+</button>
+            </td>
+            <td>R${subtotal.toFixed(2)}</td>
+            <td><button class="remove-btn" data-index="${index}">Remove</button></td>
+        `;
+        tbody.appendChild(row);
+    });
+
+    document.getElementById("cart-grand-total").textContent = "Total: R" + grandTotal.toFixed(2);
+    updateCartDisplay();
+
+    attachActions();
+}
+
+function attachActions() {
+    const cart = getCart();
+
+    // Quantity buttons
+    document.querySelectorAll(".qty-btn").forEach(btn => {
+        btn.onclick = () => {
+            const index = parseInt(btn.dataset.index);
+            if (btn.classList.contains("minus") && cart[index].quantity > 1) {
+                cart[index].quantity--;
+            }
+            if (btn.classList.contains("plus")) {
+                cart[index].quantity++;
+            }
+            saveCart(cart);
+            renderCart();
+        };
+    });
+
+    // Remove buttons
+    document.querySelectorAll(".remove-btn").forEach(btn => {
+        btn.onclick = () => {
+            const index = parseInt(btn.dataset.index);
+            cart.splice(index, 1);
+            saveCart(cart);
+            renderCart();
+        };
+    });
+}
+
+// ======== CHECKOUT ========
+document.getElementById("proceed-checkout").onclick = () => {
+    if (getCart().length === 0) {
+        alert("Your cart is empty!");
+        return;
+    }
+    window.location.href = "checkout.html";
+};
+
+// ======== INITIALIZE ========
+document.addEventListener("DOMContentLoaded", () => {
+    renderCart();
+});
+</script>
 
 </body>
 </html>
