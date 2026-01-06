@@ -53,6 +53,7 @@ main {
     text-align: center;
     cursor: pointer;
     transition: 0.3s;
+    display: block; /* Important so the <a> fills the card */
 }
 
 .category-card:hover {
@@ -118,22 +119,25 @@ const categories = [
 ];
 
 // ========================
-// RENDER CATEGORIES
+// RENDER CATEGORIES (Single-click fix)
 // ========================
 function renderCategories() {
     const container = document.getElementById("categories-container");
     container.innerHTML = "";
 
     categories.forEach(cat => {
-        const card = document.createElement("div");
-        card.className = "category-card";
-        card.innerHTML = `
-            <a href="${cat.page}" style="text-decoration:none; color:inherit;">
-                <img src="${cat.image}" alt="${cat.name}">
-                <h3>${cat.name}</h3>
-            </a>
+        const cardLink = document.createElement("a");
+        cardLink.href = cat.page;
+        cardLink.className = "category-card";
+        cardLink.style.textDecoration = "none";
+        cardLink.style.color = "inherit";
+
+        cardLink.innerHTML = `
+            <img src="${cat.image}" alt="${cat.name}">
+            <h3>${cat.name}</h3>
         `;
-        container.appendChild(card);
+
+        container.appendChild(cardLink);
     });
 }
 
