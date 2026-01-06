@@ -109,7 +109,7 @@ main::before {
 
 <main>
     <div class="products-container" id="products-container">
-        <!-- Products will be injected here -->
+        <!-- Products injected here -->
     </div>
 </main>
 
@@ -120,6 +120,7 @@ main::before {
 <script>
 // ======= SAMPLE PRODUCTS =======
 const products = [
+    {name:"Home Fragrance", price:120, image:"home-fragrance.jpg"},
     {name:"Organic Honey", price:150, image:"honey.jpg"},
     {name:"Aloe Vera Gel", price:120, image:"aloe.jpg"},
     {name:"Herbal Tea", price:80, image:"tea.jpg"},
@@ -164,6 +165,7 @@ function renderProducts() {
         `;
         container.appendChild(card);
 
+        // ======= SCOPE ELEMENTS FOR THIS CARD =======
         const qtyInput = card.querySelector("input");
         const minusBtn = card.querySelector(".minus");
         const plusBtn = card.querySelector(".plus");
