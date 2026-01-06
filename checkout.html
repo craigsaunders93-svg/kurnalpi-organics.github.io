@@ -137,6 +137,7 @@ button {
 <div class="grid">
 <div>
     <h2>Your Details</h2>
+
     <label>Name</label>
     <input id="name" required>
 
@@ -147,7 +148,7 @@ button {
     <input id="email">
 
     <label>Delivery Address</label>
-    <textarea id="address"></textarea>
+    <textarea id="address" required></textarea>
 
     <label>Notes</label>
     <textarea id="notes"></textarea>
@@ -180,6 +181,7 @@ button {
         <p><strong>Account Number:</strong> 1234567890</p>
         <p><strong>Branch Code:</strong> 250655</p>
         <p><strong>Reference:</strong> <span id="eft-ref"></span></p>
+
         <button class="whatsapp" onclick="eftConfirm()">I Have Paid – Send Order</button>
     </div>
 </div>
@@ -204,62 +206,98 @@ button {
 <script>
 const SHIPPING = 80;
 
+// --------------------
+// CART HELPERS
+// --------------------
 function getCart() {
     return JSON.parse(localStorage.getItem("cart")) || [];
 }
 
+function clearCart() {
+    localStorage.removeItem("cart");
+}
+
+// --------------------
+// LOAD CHECKOUT
+// --------------------
 function loadCheckout() {
     const cart = getCart();
+
+    // Prevent opening checkout with empty cart
+    if (cart.length === 0) {
+        alert("Your cart is empty.");
+        window.location.href = "cart.html";
+        return;
+    }
+
     let subtotal = 0;
     const tbody = document.getElementById("order-items");
     tbody.innerHTML = "";
 
-    cart.forEach(i => {
-        subtotal += i.price * i.quantity;
-        tbody.innerHTML += `<tr>
-            <td>${i.name}</td>
-            <td>${i.quantity}</td>
-            <td>R${(i.price * i.quantity).toFixed(2)}</td>
-        </tr>`;
+    cart.forEach(item => {
+        subtotal += item.price * item.quantity;
+        tbody.innerHTML += `
+            <tr>
+                <td>${item.name}</td>
+                <td>${item.quantity}</td>
+                <td>R${(item.price * item.quantity).toFixed(2)}</td>
+            </tr>
+        `;
     });
 
     document.getElementById("subtotal").textContent = "R" + subtotal.toFixed(2);
-    document.getElementById("total").textContent = "R" + (subtotal + SHIPPING).toFixed(2);
+    document.getElementById("total").textContent =
+        "R" + (subtotal + SHIPPING).toFixed(2);
 }
 
+// --------------------
+// BUILD MESSAGE
+// --------------------
 function buildMessage() {
     const cart = getCart();
-    let msg = "ORDER:%0A";
+    let msg = "ORDER DETAILS:%0A%0A";
 
-    cart.forEach(i => {
-        msg += `${i.name} x ${i.quantity} - R${(i.price*i.quantity).toFixed(2)}%0A`;
+    cart.forEach(item => {
+        msg += `${item.name} x ${item.quantity} - R${(item.price * item.quantity).toFixed(2)}%0A`;
     });
 
-    msg += `%0ATotal incl shipping: ${document.getElementById("total").textContent}%0A`;
-    msg += `Name: ${name.value}%0APhone: ${phone.value}%0AAddress: ${address.value}`;
+    msg += `%0ATotal (incl shipping): ${document.getElementById("total").textContent}%0A%0A`;
+    msg += `Name: ${name.value}%0A`;
+    msg += `Phone: ${phone.value}%0A`;
+    msg += `Address: ${address.value}`;
+
     const ref = document.getElementById("eft-ref").textContent;
-    if (ref) msg += `%0ARef: ${ref}`;
+    if (ref) msg += `%0APayment Ref: ${ref}`;
+
     return msg;
 }
 
-function clearCartAndThankYou() {
-    localStorage.removeItem("cart");
+// --------------------
+// CHECKOUT ACTIONS
+// --------------------
+function completeOrder() {
+    clearCart();
     document.getElementById("checkout-section").style.display = "none";
     document.getElementById("thank-you").style.display = "block";
 }
 
 function checkoutWhatsApp() {
-    window.open(`https://wa.me/27123456789?text=${buildMessage()}`, "_blank");
-    clearCartAndThankYou();
+    window.open(
+        `https://wa.me/27123456789?text=${buildMessage()}`,
+        "_blank"
+    );
+    completeOrder();
 }
 
 function checkoutEmail() {
-    window.location.href = `mailto:info@example.com?subject=New Order&body=${buildMessage()}`;
-    clearCartAndThankYou();
+    window.location.href =
+        `mailto:info@example.com?subject=New Order&body=${buildMessage()}`;
+    completeOrder();
 }
 
 function showEFT() {
-    document.getElementById("eft-ref").textContent = "KO-" + Math.floor(100000 + Math.random()*900000);
+    document.getElementById("eft-ref").textContent =
+        "KO-" + Math.floor(100000 + Math.random() * 900000);
     document.getElementById("eft-box").style.display = "block";
 }
 
@@ -267,6 +305,7 @@ function eftConfirm() {
     checkoutWhatsApp();
 }
 
+// --------------------
 document.addEventListener("DOMContentLoaded", loadCheckout);
 </script>
 
