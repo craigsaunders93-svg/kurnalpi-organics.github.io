@@ -5,7 +5,6 @@
 <meta name="viewport" content="width=device-width, initial-scale=1.0">
 <title>Products - Kurnalpi Organics</title>
 <link rel="stylesheet" href="style.css">
-
 <style>
 body {
     font-family: Arial, sans-serif;
@@ -165,11 +164,15 @@ function renderProducts() {
 function addProductToCart(index) {
     const product = products[index];
     const qtyInput = document.getElementById(`qty-${index}`);
-    let quantity = parseInt(qtyInput.value, 10); // FIX: ensure number
+    let quantity = parseInt(qtyInput.value, 10);
 
-    if (isNaN(quantity) || quantity < 1) quantity = 1; // default to 1 if invalid
+    if (isNaN(quantity) || quantity < 1) quantity = 1;
 
-    addToCart(product.name, product.price, product.pack, quantity, product.image);
+    // FIX: Ensure price is numeric
+    let price = parseFloat(product.price);
+    if (isNaN(price)) price = 0;
+
+    addToCart(product.name, price, product.pack, quantity, product.image);
 }
 
 // ========================
@@ -177,6 +180,8 @@ function addProductToCart(index) {
 // ========================
 document.addEventListener("DOMContentLoaded", () => {
     renderProducts();
+
+    // Safe check: only call if cart.js has function
     if (typeof updateCartDisplay === "function") updateCartDisplay();
 });
 </script>
