@@ -3,7 +3,7 @@
 <head>
 <meta charset="UTF-8">
 <meta name="viewport" content="width=device-width, initial-scale=1.0">
-<title>Products - Kurnalpi Organics</title>
+<title>Category - Kurnalpi Organics</title>
 <link rel="stylesheet" href="style.css">
 
 <style>
@@ -73,10 +73,6 @@ main::before {
     margin: 10px 0 5px;
 }
 
-.product-card p {
-    margin: 5px 0;
-}
-
 .qty-box {
     display: flex;
     justify-content: center;
@@ -125,8 +121,9 @@ main::before {
 </header>
 
 <main>
+    <h1 id="category-title"></h1>
     <div class="products-container" id="products-container">
-        <!-- Products will be injected here -->
+        <!-- Products injected here -->
     </div>
 </main>
 
@@ -137,12 +134,12 @@ main::before {
 <script>
 // ======= FULL PRODUCT LIST WITH CATEGORIES =======
 const products = [
-    {name: "Home Fragrance", price: 120, image: "home-fragrance.jpg", category: "Home Fragrance"},
-    {name: "Garden Ornaments", price: 200, image: "garden-ornaments.jpg", category: "Garden Ornaments"},
-    {name: "Organic Honey", price: 150, image: "honey.jpg", category: "Organic Products"},
-    {name: "Aloe Vera Gel", price: 120, image: "aloe.jpg", category: "Organic Products"},
-    {name: "Herbal Tea", price: 80, image: "tea.jpg", category: "Organic Products"},
-    {name: "Natural Soap", price: 60, image: "soap.jpg", category: "Organic Products"}
+    {name: "Home Fragrance 1", price: 120, image: "home-fragrance.jpg", category: "Home Fragrance"},
+    {name: "Garden Ornament 1", price: 200, image: "garden-ornaments.jpg", category: "Garden Ornaments"},
+    {name: "Seedling 1", price: 50, image: "seedling1.jpg", category: "Seedlings"},
+    {name: "Arts & Crafts Kit 1", price: 80, image: "arts-crafts.jpg", category: "Arts & Crafts"},
+    {name: "Garden Tool 1", price: 150, image: "garden.jpg", category: "Garden"},
+    // Add more products here as needed
 ];
 
 // ======= CART FUNCTIONS =======
@@ -174,12 +171,19 @@ function addToCart(name, price, pack="", quantity=1, image="") {
     alert(`Added ${quantity} x ${name} to cart`);
 }
 
-// ======= RENDER PRODUCTS =======
+// ======= GET CATEGORY FROM URL =======
+const params = new URLSearchParams(window.location.search);
+const currentCategory = params.get('cat') || "";
+document.getElementById("category-title").textContent = currentCategory;
+
+// ======= RENDER PRODUCTS BY CATEGORY =======
 function renderProducts() {
     const container = document.getElementById("products-container");
     container.innerHTML = "";
 
-    products.forEach(prod => {
+    const filtered = products.filter(p => p.category === currentCategory);
+
+    filtered.forEach(prod => {
         const card = document.createElement("div");
         card.className = "product-card";
         card.innerHTML = `
@@ -212,6 +216,5 @@ document.addEventListener("DOMContentLoaded", () => {
     updateCartTotal();
 });
 </script>
-
 </body>
 </html>
