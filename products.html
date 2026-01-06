@@ -3,190 +3,198 @@
 <head>
 <meta charset="UTF-8">
 <meta name="viewport" content="width=device-width, initial-scale=1.0">
-<title>Kurnalpi Organics - Products</title>
+<title>Products - Kurnalpi Organics</title>
 <link rel="stylesheet" href="style.css">
+
 <style>
-/* ========================
-   MAIN CONTENT
-   ======================== */
+body {
+    font-family: Arial, sans-serif;
+    background-image: url('background.jpg');
+    background-size: cover;
+    background-attachment: fixed;
+    margin: 0;
+    color: white;
+}
+
 main {
-    position: relative;
-    min-height: 60vh;
     padding: 40px;
+    position: relative;
 }
 
 main::before {
     content: "";
     position: absolute;
-    top: 0;
-    left: 0;
-    width: 100%;
-    height: 100%;
-    background: rgba(0,0,0,0.3);
+    inset: 0;
+    background: rgba(0,0,0,0.5);
     z-index: -1;
 }
 
-/* ========================
-   PRODUCT CATEGORIES
-   ======================== */
-.product-categories {
-    display: flex;
-    flex-wrap: wrap;
+.products-container {
+    max-width: 1200px;
+    margin: auto;
+    display: grid;
+    grid-template-columns: repeat(auto-fit, minmax(220px, 1fr));
     gap: 20px;
-    justify-content: center;
-    margin-top: 30px;
 }
 
-.category-card {
-    display: flex;
-    flex-direction: column;
-    align-items: center;
-    text-decoration: none;
-    color: white;
-    background: rgba(47, 93, 58, 0.8);
+.product-card {
+    background: rgba(47, 93, 58, 0.9);
     padding: 20px;
     border-radius: 10px;
-    width: 180px;
-    box-shadow: 0 4px 6px rgba(0,0,0,0.2);
-    transition: transform 0.3s ease, background 0.3s ease, box-shadow 0.3s ease;
-    opacity: 0;
-    transform: translateY(20px);
-    animation: fadeInUp 0.6s ease forwards;
-}
-
-.category-card img {
-    width: 80px;
-    height: 80px;
-    object-fit: contain;
-    margin-bottom: 10px;
-    transition: transform 0.3s ease, box-shadow 0.3s ease;
-}
-
-.category-card h3 {
-    margin: 0;
     text-align: center;
+}
+
+.product-card img {
+    width: 150px;
+    height: 150px;
+    object-fit: cover;
+    border-radius: 8px;
+    margin-bottom: 10px;
+}
+
+.product-card h3 {
+    margin: 10px 0 5px;
+}
+
+.product-card p {
+    margin: 5px 0;
+}
+
+.qty-box {
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    margin: 10px 0;
+    gap: 5px;
+}
+
+.qty-box button {
+    padding: 5px 10px;
     font-size: 16px;
-    transition: color 0.3s ease;
-}
-
-/* Hover effect */
-.category-card:hover {
-    transform: translateY(-5px) scale(1.05);
-    background: rgba(47, 93, 58, 1);
-    box-shadow: 0 8px 15px rgba(0,0,0,0.3);
-}
-
-.category-card:hover img {
-    transform: scale(1.1);
-    box-shadow: 0 4px 10px rgba(0,0,0,0.3);
-}
-
-.category-card:hover h3 {
-    color: #fffacd;
-}
-
-/* ========================
-   FADE-IN KEYFRAMES
-   ======================== */
-@keyframes fadeInUp {
-    0% { opacity: 0; transform: translateY(20px); }
-    100% { opacity: 1; transform: translateY(0); }
-}
-
-.product-categories .category-card:nth-child(1) { animation-delay: 0.1s; }
-.product-categories .category-card:nth-child(2) { animation-delay: 0.2s; }
-.product-categories .category-card:nth-child(3) { animation-delay: 0.3s; }
-.product-categories .category-card:nth-child(4) { animation-delay: 0.4s; }
-.product-categories .category-card:nth-child(5) { animation-delay: 0.5s; }
-
-/* ========================
-   HAMBURGER MENU
-   ======================== */
-.hamburger {
-    display: none;
-    font-size: 28px;
     cursor: pointer;
 }
 
-@media (max-width: 600px) {
-    .hamburger { display: block; }
+.qty-box input {
+    width: 50px;
+    text-align: center;
+}
 
-    nav.nav {
-        display: none;
-        flex-direction: column;
-        width: 100%;
-    }
+.add-btn {
+    margin-top: 10px;
+    padding: 10px 15px;
+    background: #ffd700;
+    color: black;
+    border: none;
+    cursor: pointer;
+    border-radius: 6px;
+}
 
-    nav.nav.active { display: flex; }
-
-    .product-categories { flex-direction: column; align-items: center; }
-    .category-card { width: 70%; }
+.add-btn:hover {
+    background: #ffcc00;
 }
 </style>
 </head>
-<body>
 
-<!-- ========================
-     HEADER
-     ======================== -->
+<body>
 <header class="site-header">
     <div class="header-inner">
-        <a href="index.html">
-            <img src="logo.png" alt="Kurnalpi Organics Logo" class="logo">
-        </a>
-
-        <div class="hamburger" id="hamburger">&#9776;</div>
-
-        <nav class="nav" id="nav-menu">
+        <a href="index.html"><img src="logo.png" class="logo"></a>
+        <nav class="nav">
             <a href="index.html">Home</a>
-            <a href="about.html">About</a>
             <a href="products.html">Products</a>
-            <a href="contact.html">Contact Us</a>
-            <a href="cart.html" class="cart">🛒 <span id="cart-total">R0</span></a>
+            <a href="cart.html">Cart 🛒 <span id="cart-total">R0.00</span></a>
         </nav>
     </div>
 </header>
 
-<!-- ========================
-     MAIN CONTENT
-     ======================== -->
 <main>
-    <h1>Our Products</h1>
-    <p>Explore our wide range of sustainable, organic products:</p>
-
-    <div class="product-categories">
-        <a href="garden-ornaments.html" class="category-card">
-            <img src="garden.png" alt="Garden Ornaments">
-            <h3>Garden Ornaments</h3>
-        </a>
-        <a href="soaps.html" class="category-card">
-            <img src="soap.png" alt="Soaps">
-            <h3>Soaps</h3>
-        </a>
-        <a href="arts-crafts.html" class="category-card">
-            <img src="crafts.png" alt="Arts & Crafts">
-            <h3>Arts & Crafts</h3>
-        </a>
-        <a href="home-fragrance.html" class="category-card">
-            <img src="fragrance.png" alt="Home Fragrance">
-            <h3>Home Fragrance</h3>
-        </a>
-        <a href="seedlings.html" class="category-card">
-            <img src="seedling.png" alt="Seedlings">
-            <h3>Seedlings</h3>
-        </a>
+    <div class="products-container" id="products-container">
+        <!-- Products will be injected here -->
     </div>
 </main>
 
-<script src="cart.js"></script>
-<script>
-const hamburger = document.getElementById('hamburger');
-const navMenu = document.getElementById('nav-menu');
+<footer>
+    &copy; 2026 Kurnalpi Organics
+</footer>
 
-hamburger.addEventListener('click', () => {
-    navMenu.classList.toggle('active');
+<script>
+// ======= SAMPLE PRODUCTS =======
+const products = [
+    {name:"Organic Honey", price:150, image:"honey.jpg"},
+    {name:"Aloe Vera Gel", price:120, image:"aloe.jpg"},
+    {name:"Herbal Tea", price:80, image:"tea.jpg"},
+    {name:"Natural Soap", price:60, image:"soap.jpg"}
+];
+
+// ======= CART FUNCTIONS =======
+function getCart() {
+    return JSON.parse(localStorage.getItem("cart")) || [];
+}
+
+function saveCart(cart) {
+    localStorage.setItem("cart", JSON.stringify(cart));
+    updateCartTotal();
+}
+
+function updateCartTotal() {
+    const cart = getCart();
+    let total = 0;
+    cart.forEach(item => total += item.price * item.quantity);
+    document.getElementById("cart-total").textContent = "R" + total.toFixed(2);
+}
+
+// ======= RENDER PRODUCTS =======
+function renderProducts() {
+    const container = document.getElementById("products-container");
+    container.innerHTML = "";
+
+    products.forEach((prod, index) => {
+        const card = document.createElement("div");
+        card.className = "product-card";
+        card.innerHTML = `
+            <img src="${prod.image}" alt="${prod.name}">
+            <h3>${prod.name}</h3>
+            <p>Price: R${prod.price.toFixed(2)}</p>
+            <div class="qty-box">
+                <button class="minus">−</button>
+                <input type="number" min="1" value="1">
+                <button class="plus">+</button>
+            </div>
+            <button class="add-btn">Add to Cart</button>
+        `;
+        container.appendChild(card);
+
+        const qtyInput = card.querySelector("input");
+        const minusBtn = card.querySelector(".minus");
+        const plusBtn = card.querySelector(".plus");
+        const addBtn = card.querySelector(".add-btn");
+
+        minusBtn.onclick = () => {
+            if (parseInt(qtyInput.value) > 1) qtyInput.value = parseInt(qtyInput.value)-1;
+        };
+        plusBtn.onclick = () => { qtyInput.value = parseInt(qtyInput.value)+1; };
+        addBtn.onclick = () => {
+            addToCart(prod.name, prod.price, "", parseInt(qtyInput.value), prod.image);
+        };
+    });
+}
+
+// ======= ADD TO CART =======
+function addToCart(name, price, pack="", quantity=1, image="") {
+    if(!name || isNaN(price) || price<0 || quantity<1) return;
+    let cart = getCart();
+    const existing = cart.find(item => item.name===name && item.pack===pack);
+    if(existing) existing.quantity += quantity;
+    else cart.push({name, price, pack, quantity, image});
+    saveCart(cart);
+    alert(`Added ${quantity} x ${name} to cart`);
+}
+
+// ======= INITIALIZE =======
+document.addEventListener("DOMContentLoaded", () => {
+    renderProducts();
+    updateCartTotal();
 });
 </script>
-
 </body>
 </html>
