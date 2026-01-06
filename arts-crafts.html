@@ -8,9 +8,6 @@
 <link rel="stylesheet" href="style.css">
 
 <style>
-/* ========================
-   PAGE + FOOTER SUPPORT
-   ======================== */
 html, body {
     height: 100%;
     margin: 0;
@@ -36,10 +33,8 @@ main::before {
     z-index: -1;
 }
 
-/* ========================
-   PRODUCT GRID
-   ======================== */
-.products {
+/* PRODUCT GRID */
+.products-container {
     display: grid;
     grid-template-columns: repeat(auto-fit, minmax(250px, 1fr));
     gap: 25px;
@@ -65,34 +60,47 @@ main::before {
     margin: 10px 0 5px;
 }
 
-.product-card p {
-    font-size: 14px;
-    margin: 5px 0;
-}
-
 .price {
     font-size: 18px;
     font-weight: bold;
     margin: 10px 0;
 }
 
-.product-card button {
+/* QUANTITY */
+.qty-box {
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    gap: 6px;
+    margin: 10px 0;
+}
+
+.qty-box button {
+    padding: 5px 10px;
+    font-size: 16px;
+    cursor: pointer;
+}
+
+.qty-box input {
+    width: 50px;
+    text-align: center;
+}
+
+/* ADD BUTTON */
+.add-btn {
     background: #1f4d30;
     color: white;
     border: none;
     padding: 10px 16px;
     border-radius: 6px;
     cursor: pointer;
-    font-size: 14px;
 }
 
-.product-card button:hover {
+.add-btn:hover {
     background: #163823;
 }
 
-/* ========================
-   FOOTER
-   ======================== */
+/* FOOTER */
 footer {
     text-align: center;
     padding: 15px 0;
@@ -108,9 +116,6 @@ footer {
 
 <div class="page-wrapper">
 
-<!-- ========================
-     HEADER
-     ======================== -->
 <header class="site-header">
     <div class="header-inner">
         <a href="index.html">
@@ -124,70 +129,18 @@ footer {
             <a href="about.html">About</a>
             <a href="products.html">Products</a>
             <a href="contact.html">Contact Us</a>
-            <a href="cart.html" class="cart">🛒 <span id="cart-total">R0</span></a>
+            <a href="cart.html">🛒 <span id="cart-total">R0.00</span></a>
         </nav>
     </div>
 </header>
 
-<!-- ========================
-     MAIN CONTENT
-     ======================== -->
 <main>
     <h1>Arts & Crafts</h1>
     <p>Handmade crafts created with care, creativity, and natural materials.</p>
 
-    <div class="products">
-
-        <!-- PRODUCT 1 -->
-        <div class="product-card">
-            <img src="craft1.png" alt="Handcrafted Clay Bowl">
-            <h3>Handcrafted Clay Bowl</h3>
-            <p>Decorative clay bowl, perfect for home décor.</p>
-            <div class="price">R220</div>
-            <button data-name="Handcrafted Clay Bowl" data-price="220">
-                Add to Cart
-            </button>
-        </div>
-
-        <!-- PRODUCT 2 -->
-        <div class="product-card">
-            <img src="craft2.png" alt="Beaded Bracelet">
-            <h3>Beaded Bracelet</h3>
-            <p>Colorful handmade bracelet using natural beads.</p>
-            <div class="price">R90</div>
-            <button data-name="Beaded Bracelet" data-price="90">
-                Add to Cart
-            </button>
-        </div>
-
-        <!-- PRODUCT 3 -->
-        <div class="product-card">
-            <img src="craft3.png" alt="Wooden Wall Art">
-            <h3>Wooden Wall Art</h3>
-            <p>Rustic wall décor carved from reclaimed wood.</p>
-            <div class="price">R350</div>
-            <button data-name="Wooden Wall Art" data-price="350">
-                Add to Cart
-            </button>
-        </div>
-
-        <!-- PRODUCT 4 -->
-        <div class="product-card">
-            <img src="craft4.png" alt="Macramé Plant Hanger">
-            <h3>Macramé Plant Hanger</h3>
-            <p>Hand-knotted hanger ideal for indoor plants.</p>
-            <div class="price">R180</div>
-            <button data-name="Macramé Plant Hanger" data-price="180">
-                Add to Cart
-            </button>
-        </div>
-
-    </div>
+    <div class="products-container" id="products-container"></div>
 </main>
 
-<!-- ========================
-     FOOTER
-     ======================== -->
 <footer>
     &copy; 2026 Kurnalpi Organics. All rights reserved.
 </footer>
@@ -195,15 +148,65 @@ footer {
 </div>
 
 <script src="cart.js"></script>
+
+<script>
+// ===== PRODUCTS =====
+const products = [
+    {name: "Handcrafted Clay Bowl", price: 220, image: "craft1.png"},
+    {name: "Beaded Bracelet", price: 90, image: "craft2.png"},
+    {name: "Wooden Wall Art", price: 350, image: "craft3.png"},
+    {name: "Macramé Plant Hanger", price: 180, image: "craft4.png"}
+];
+
+// ===== RENDER PRODUCTS =====
+function renderProducts() {
+    const container = document.getElementById("products-container");
+    container.innerHTML = "";
+
+    products.forEach(prod => {
+        const card = document.createElement("div");
+        card.className = "product-card";
+
+        card.innerHTML = `
+            <img src="${prod.image}" alt="${prod.name}">
+            <h3>${prod.name}</h3>
+            <div class="price">R${prod.price.toFixed(2)}</div>
+
+            <div class="qty-box">
+                <button class="minus">−</button>
+                <input type="number" value="1" min="1">
+                <button class="plus">+</button>
+            </div>
+
+            <button class="add-btn">Add to Cart</button>
+        `;
+
+        container.appendChild(card);
+
+        const qtyInput = card.querySelector("input");
+
+        card.querySelector(".minus").onclick = () => {
+            if (qtyInput.value > 1) qtyInput.value--;
+        };
+
+        card.querySelector(".plus").onclick = () => {
+            qtyInput.value++;
+        };
+
+        card.querySelector(".add-btn").onclick = () => {
+            addToCart(prod.name, prod.price, parseInt(qtyInput.value), prod.image);
+        };
+    });
+}
+
+document.addEventListener("DOMContentLoaded", renderProducts);
+</script>
+
 <script>
 const hamburger = document.getElementById('hamburger');
 const navMenu = document.getElementById('nav-menu');
-
-hamburger.addEventListener('click', () => {
-    navMenu.classList.toggle('active');
-});
+hamburger.addEventListener('click', () => navMenu.classList.toggle('active'));
 </script>
 
 </body>
 </html>
-
