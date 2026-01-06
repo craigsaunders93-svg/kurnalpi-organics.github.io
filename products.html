@@ -110,6 +110,7 @@ footer {
 // ======= CATEGORIES =======
 const categories = [
     {name: "Home Fragrance", image: "home-fragrance.jpg", page: "home-fragrance.html"},
+    {name: "Soaps", image: "soaps.jpg", page: "soaps.html"},
     {name: "Garden Ornaments", image: "garden-ornaments.jpg", page: "garden-ornaments.html"},
     {name: "Seedlings", image: "seedlings.jpg", page: "seedlings.html"},
     {name: "Arts & Crafts", image: "arts-crafts.jpg", page: "arts-crafts.html"},
@@ -140,7 +141,6 @@ function renderCategories() {
         const card = document.createElement("div");
         card.className = "category-card";
 
-        // Single-click <a> for navigation
         card.innerHTML = `
             <a href="${cat.page}" style="text-decoration:none; color:inherit;">
                 <img src="${cat.image}" alt="${cat.name}">
