@@ -178,9 +178,7 @@ th {
         <a href="about.html">About</a>
         <a href="products.html">Products</a>
         <a href="contact.html">Contact Us</a>
-        <a href="cart.html" class="cart">
-            🛒 <span id="cart-total">R0.00</span>
-        </a>
+        <a href="cart.html" class="cart">🛒 <span id="cart-total">R0.00</span></a>
     </nav>
 </header>
 
@@ -202,9 +200,7 @@ th {
                     <th>Action</th>
                 </tr>
             </thead>
-            <tbody id="cart-items">
-                <!-- Cart items will be injected here -->
-            </tbody>
+            <tbody id="cart-items"></tbody>
         </table>
 
         <div class="cart-footer">
@@ -219,5 +215,133 @@ th {
 </footer>
 
 </div>
+
+<!-- ======== CART JS ======== -->
+<script>
+// ========================
+// CART.JS – Synced with Products page
+// ========================
+
+// Get cart from localStorage
+function getCart() {
+    return JSON.parse(localStorage.getItem("cart")) || [];
+}
+
+// Save cart to localStorage
+function saveCart(cart) {
+    localStorage.setItem("cart", JSON.stringify(cart));
+    updateCartHeader();
+}
+
+// Update cart total in header
+function updateCartHeader() {
+    const cart = getCart();
+    let total = 0;
+    cart.forEach(item => total += item.price * item.quantity);
+    const headerTotal = document.getElementById("cart-total");
+    if (headerTotal) headerTotal.textContent = "R" + total.toFixed(2);
+}
+
+// Render cart table
+function renderCartPage() {
+    const cart = getCart();
+    const tbody = document.getElementById("cart-items");
+    const message = document.getElementById("cart-message");
+    const grandTotalElem = document.getElementById("cart-grand-total");
+
+    tbody.innerHTML = "";
+
+    if (cart.length === 0) {
+        if (message) message.textContent = "Your cart is currently empty.";
+        if (grandTotalElem) grandTotalElem.textContent = "Total: R0.00";
+        updateCartHeader();
+        return;
+    }
+
+    if (message) message.textContent = "";
+
+    let grandTotal = 0;
+    cart.forEach((item, index) => {
+        const subtotal = item.price * item.quantity;
+        grandTotal += subtotal;
+
+        const row = document.createElement("tr");
+        row.className = "cart-item";
+        row.innerHTML = `
+            <td><img src="${item.image || 'placeholder.png'}" alt="${item.name}"></td>
+            <td>${item.name}</td>
+            <td>${item.pack || '-'}</td>
+            <td>R${item.price.toFixed(2)}</td>
+            <td>
+                <button class="qty-btn minus" data-index="${index}" ${item.quantity <= 1 ? 'disabled' : ''}>−</button>
+                <input type="number" class="qty-input" min="1" value="${item.quantity}" data-index="${index}">
+                <button class="qty-btn plus" data-index="${index}">+</button>
+            </td>
+            <td>R${subtotal.toFixed(2)}</td>
+            <td><button class="remove-btn" data-index="${index}">Remove</button></td>
+        `;
+        tbody.appendChild(row);
+    });
+
+    if (grandTotalElem) grandTotalElem.textContent = `Total: R${grandTotal.toFixed(2)}`;
+    updateCartHeader();
+    attachCartActions();
+}
+
+// Attach quantity & remove actions
+function attachCartActions() {
+    const cart = getCart();
+
+    document.querySelectorAll(".qty-btn").forEach(btn => {
+        btn.onclick = () => {
+            const index = parseInt(btn.dataset.index);
+            if (btn.classList.contains("minus") && cart[index].quantity > 1) cart[index].quantity--;
+            if (btn.classList.contains("plus")) cart[index].quantity++;
+            saveCart(cart);
+            renderCartPage();
+        };
+    });
+
+    document.querySelectorAll(".qty-input").forEach(input => {
+        input.onchange = () => {
+            const index = parseInt(input.dataset.index);
+            let qty = parseInt(input.value);
+            if (isNaN(qty) || qty < 1) qty = 1;
+            cart[index].quantity = qty;
+            saveCart(cart);
+            renderCartPage();
+        };
+    });
+
+    document.querySelectorAll(".remove-btn").forEach(btn => {
+        btn.onclick = () => {
+            const index = parseInt(btn.dataset.index);
+            cart.splice(index, 1);
+            saveCart(cart);
+            renderCartPage();
+        };
+    });
+}
+
+// Proceed to checkout
+function attachCheckoutButton() {
+    const btn = document.getElementById("proceed-checkout");
+    if (!btn) return;
+    btn.onclick = () => {
+        if (getCart().length === 0) {
+            alert("Your cart is empty!");
+            return;
+        }
+        window.location.href = "checkout.html";
+    };
+}
+
+// Initialize
+document.addEventListener("DOMContentLoaded", () => {
+    renderCartPage();
+    attachCheckoutButton();
+});
+</script>
+
 </body>
 </html>
