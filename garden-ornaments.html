@@ -8,9 +8,6 @@
 <link rel="stylesheet" href="style.css">
 
 <style>
-/* ========================
-   PAGE + FOOTER SUPPORT
-   ======================== */
 html, body {
     height: 100%;
     margin: 0;
@@ -36,10 +33,8 @@ main::before {
     z-index: -1;
 }
 
-/* ========================
-   PRODUCT GRID
-   ======================== */
-.products {
+/* PRODUCT GRID */
+.products-container {
     display: grid;
     grid-template-columns: repeat(auto-fit, minmax(250px, 1fr));
     gap: 25px;
@@ -76,23 +71,41 @@ main::before {
     margin: 10px 0;
 }
 
-.product-card button {
+/* QUANTITY */
+.qty-box {
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    gap: 6px;
+    margin: 10px 0;
+}
+
+.qty-box button {
+    padding: 5px 10px;
+    font-size: 16px;
+    cursor: pointer;
+}
+
+.qty-box input {
+    width: 50px;
+    text-align: center;
+}
+
+/* ADD BUTTON */
+.add-btn {
     background: #1f4d30;
     color: white;
     border: none;
     padding: 10px 16px;
     border-radius: 6px;
     cursor: pointer;
-    font-size: 14px;
 }
 
-.product-card button:hover {
+.add-btn:hover {
     background: #163823;
 }
 
-/* ========================
-   FOOTER
-   ======================== */
+/* FOOTER */
 footer {
     text-align: center;
     padding: 15px 0;
@@ -108,9 +121,6 @@ footer {
 
 <div class="page-wrapper">
 
-<!-- ========================
-     HEADER
-     ======================== -->
 <header class="site-header">
     <div class="header-inner">
         <a href="index.html">
@@ -124,70 +134,18 @@ footer {
             <a href="about.html">About</a>
             <a href="products.html">Products</a>
             <a href="contact.html">Contact Us</a>
-            <a href="cart.html" class="cart">🛒 <span id="cart-total">R0</span></a>
+            <a href="cart.html">🛒 <span id="cart-total">R0.00</span></a>
         </nav>
     </div>
 </header>
 
-<!-- ========================
-     MAIN CONTENT
-     ======================== -->
 <main>
     <h1>Garden Ornaments</h1>
     <p>Beautify your garden with our unique, handcrafted ornaments.</p>
 
-    <div class="products">
-
-        <!-- PRODUCT 1 -->
-        <div class="product-card">
-            <img src="bird-feeder.png" alt="Bird Feeder">
-            <h3>Bird Feeder</h3>
-            <p>Handcrafted wooden bird feeder to attract birds to your garden.</p>
-            <div class="price">R150</div>
-            <button data-name="Bird Feeder" data-price="150">
-                Add to Cart
-            </button>
-        </div>
-
-        <!-- PRODUCT 2 -->
-        <div class="product-card">
-            <img src="garden-gnome.png" alt="Garden Gnome">
-            <h3>Garden Gnome</h3>
-            <p>Charming garden gnome to add character to your outdoor space.</p>
-            <div class="price">R120</div>
-            <button data-name="Garden Gnome" data-price="120">
-                Add to Cart
-            </button>
-        </div>
-
-        <!-- PRODUCT 3 -->
-        <div class="product-card">
-            <img src="stone-fountain.png" alt="Stone Fountain">
-            <h3>Stone Fountain</h3>
-            <p>Elegant stone fountain to create a relaxing garden ambiance.</p>
-            <div class="price">R450</div>
-            <button data-name="Stone Fountain" data-price="450">
-                Add to Cart
-            </button>
-        </div>
-
-        <!-- PRODUCT 4 -->
-        <div class="product-card">
-            <img src="solar-lamp.png" alt="Solar Garden Lamp">
-            <h3>Solar Garden Lamp</h3>
-            <p>Eco-friendly solar-powered lamp to illuminate your garden at night.</p>
-            <div class="price">R200</div>
-            <button data-name="Solar Garden Lamp" data-price="200">
-                Add to Cart
-            </button>
-        </div>
-
-    </div>
+    <div class="products-container" id="products-container"></div>
 </main>
 
-<!-- ========================
-     FOOTER
-     ======================== -->
 <footer>
     &copy; 2026 Kurnalpi Organics. All rights reserved.
 </footer>
@@ -195,13 +153,85 @@ footer {
 </div>
 
 <script src="cart.js"></script>
+
+<script>
+// ===== PRODUCTS =====
+const products = [
+    {
+        name: "Bird Feeder",
+        price: 150,
+        image: "bird-feeder.png",
+        desc: "Handcrafted wooden bird feeder to attract birds."
+    },
+    {
+        name: "Garden Gnome",
+        price: 120,
+        image: "garden-gnome.png",
+        desc: "Charming gnome to add character to your garden."
+    },
+    {
+        name: "Stone Fountain",
+        price: 450,
+        image: "stone-fountain.png",
+        desc: "Elegant stone fountain for a relaxing ambiance."
+    },
+    {
+        name: "Solar Garden Lamp",
+        price: 200,
+        image: "solar-lamp.png",
+        desc: "Eco-friendly solar-powered garden lamp."
+    }
+];
+
+// ===== RENDER PRODUCTS =====
+function renderProducts() {
+    const container = document.getElementById("products-container");
+    container.innerHTML = "";
+
+    products.forEach(prod => {
+        const card = document.createElement("div");
+        card.className = "product-card";
+
+        card.innerHTML = `
+            <img src="${prod.image}" alt="${prod.name}">
+            <h3>${prod.name}</h3>
+            <p>${prod.desc}</p>
+            <div class="price">R${prod.price.toFixed(2)}</div>
+
+            <div class="qty-box">
+                <button class="minus">−</button>
+                <input type="number" value="1" min="1">
+                <button class="plus">+</button>
+            </div>
+
+            <button class="add-btn">Add to Cart</button>
+        `;
+
+        container.appendChild(card);
+
+        const qtyInput = card.querySelector("input");
+
+        card.querySelector(".minus").onclick = () => {
+            if (qtyInput.value > 1) qtyInput.value--;
+        };
+
+        card.querySelector(".plus").onclick = () => {
+            qtyInput.value++;
+        };
+
+        card.querySelector(".add-btn").onclick = () => {
+            addToCart(prod.name, prod.price, parseInt(qtyInput.value), prod.image);
+        };
+    });
+}
+
+document.addEventListener("DOMContentLoaded", renderProducts);
+</script>
+
 <script>
 const hamburger = document.getElementById('hamburger');
 const navMenu = document.getElementById('nav-menu');
-
-hamburger.addEventListener('click', () => {
-    navMenu.classList.toggle('active');
-});
+hamburger.addEventListener('click', () => navMenu.classList.toggle('active'));
 </script>
 
 </body>
