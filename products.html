@@ -35,6 +35,7 @@ header .nav a:hover { opacity: 0.8; }
 
 main {
     padding: 40px;
+    text-align: center;
 }
 
 /* ===== Categories ===== */
@@ -95,7 +96,7 @@ footer {
 </header>
 
 <main>
-    <h1 style="text-align:center; margin-bottom:30px;">Our Product Categories</h1>
+    <h1 style="margin-bottom:30px;">Our Product Categories</h1>
 
     <!-- Categories Section -->
     <div class="categories-container" id="categories-container"></div>
@@ -134,11 +135,19 @@ function updateCartTotal() {
 function renderCategories() {
     const container = document.getElementById("categories-container");
     container.innerHTML = "";
+
     categories.forEach(cat => {
         const card = document.createElement("div");
         card.className = "category-card";
-        card.innerHTML = `<img src="${cat.image}" alt="${cat.name}"><h3>${cat.name}</h3>`;
-        card.onclick = () => { window.location.href = cat.page; };
+
+        // Use an <a> for proper navigation to avoid double clicks
+        card.innerHTML = `
+            <a href="${cat.page}" style="text-decoration:none; color:inherit;">
+                <img src="${cat.image}" alt="${cat.name}">
+                <h3>${cat.name}</h3>
+            </a>
+        `;
+
         container.appendChild(card);
     });
 }
