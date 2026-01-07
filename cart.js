@@ -1,5 +1,5 @@
 // ========================
-// CART.JS – Updated for all products
+// CART.JS – FIXED VERSION
 // ========================
 
 // Get cart from localStorage
@@ -14,7 +14,7 @@ function saveCart(cart) {
 }
 
 // Update cart total in header
-function updateCartDisplay() 
+function updateCartDisplay() {
     const cart = getCart();
     let total = 0;
 
@@ -28,8 +28,6 @@ function updateCartDisplay()
     if (cartTotalElement) {
         cartTotalElement.textContent = "R" + total.toFixed(2);
     }
-}
-
 }
 
 // Add item to cart
@@ -54,7 +52,6 @@ function addToCart(name, price, quantity = 1, image = "", pack = "") {
     saveCart(cart);
     alert(`Added ${quantity} x ${name} to cart!`);
 }
-
 
 // ========================
 // RENDER CART PAGE
@@ -84,10 +81,9 @@ function renderCartPage() {
         total += subtotal;
 
         const row = document.createElement("tr");
-        row.classList.add("cart-item");
         row.innerHTML = `
             <td>
-                <img src="${item.image || 'placeholder.png'}" alt="${item.name}" width="80" height="80">
+                <img src="${item.image || 'placeholder.png'}" width="80">
                 <div>${item.name}</div>
             </td>
             <td>${item.pack || "-"}</td>
@@ -116,7 +112,6 @@ function renderCartPage() {
 function attachCartActions() {
     const cart = getCart();
 
-    // Quantity buttons
     document.querySelectorAll(".qty-btn").forEach(btn => {
         btn.onclick = () => {
             const index = parseInt(btn.dataset.index);
@@ -131,19 +126,17 @@ function attachCartActions() {
         };
     });
 
-    // Quantity input direct change
     document.querySelectorAll(".qty-input").forEach(input => {
         input.onchange = () => {
             const index = parseInt(input.dataset.index);
             let qty = parseInt(input.value);
-            if (isNaN(qty) || qty < 1) qty = 1;
+            if (qty < 1 || isNaN(qty)) qty = 1;
             cart[index].quantity = qty;
             saveCart(cart);
             renderCartPage();
         };
     });
 
-    // Remove buttons
     document.querySelectorAll(".remove-btn").forEach(btn => {
         btn.onclick = () => {
             const index = parseInt(btn.dataset.index);
@@ -155,25 +148,9 @@ function attachCartActions() {
 }
 
 // ========================
-// PROCEED TO CHECKOUT
-// ========================
-function attachCheckoutButton() {
-    const btn = document.getElementById("proceed-checkout");
-    if (!btn) return;
-
-    btn.onclick = () => {
-        if (getCart().length === 0) {
-            alert("Your cart is empty!");
-            return;
-        }
-        window.location.href = "checkout.html";
-    };
-}
-
-// ========================
-// INITIALIZE ON PAGE LOAD
+// INIT
 // ========================
 document.addEventListener("DOMContentLoaded", () => {
+    updateCartDisplay();
     renderCartPage();
-    attachCheckoutButton();
 });
