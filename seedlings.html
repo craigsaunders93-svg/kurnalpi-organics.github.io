@@ -184,8 +184,6 @@ function updateCartTotal() {
     cart.forEach(item => total += item.price * item.quantity);
     document.getElementById("cart-total").textContent = "R" + total.toFixed(2);
 }
-   <script src="cart.js"></script>
-}
 // ======= RENDER PRODUCTS =======
 function renderProducts() {
     const container = document.getElementById("products-container");
@@ -230,6 +228,8 @@ const hamburger = document.getElementById('hamburger');
 const navMenu = document.getElementById('nav-menu');
 hamburger.addEventListener('click', () => navMenu.classList.toggle('active'));
 </script>
-
+   
+   <script src="cart.js"></script>
+   
 </body>
 </html>
