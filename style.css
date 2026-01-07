@@ -1,99 +1,249 @@
-<script>
-// ======= PRODUCTS =======
-const seedlingsProducts = [
-    {name: "Tomato Seedling", price: 35, image: "tomato-seedling.png"},
-    {name: "Basil Seedling", price: 25, image: "basil-seedling.png"},
-    {name: "Lettuce Seedling", price: 30, image: "lettuce-seedling.png"},
-    {name: "Spinach Seedling", price: 28, image: "spinach-seedling.png"}
-];
-
-// ======= CART FUNCTIONS =======
-function getCart() {
-    return JSON.parse(localStorage.getItem("cart")) || [];
+/* ========================
+   GLOBAL STYLES
+   ======================== */
+html, body {
+    height: 100%;
+    margin: 0;
+    font-family: Arial, sans-serif;
+    background: url('background.jpg') center/cover no-repeat fixed;
+    color: white;
 }
 
-function saveCart(cart) {
-    localStorage.setItem("cart", JSON.stringify(cart));
-    updateCartTotal();
+.page-wrapper {
+    min-height: 100%;
+    display: flex;
+    flex-direction: column;
 }
 
-function addToCart(name, price, quantity, image) {
-    const cart = getCart();
-    const existing = cart.find(item => item.name === name);
-    
-    if(existing) {
-        existing.quantity += quantity;
-    } else {
-        cart.push({name, price, quantity, image});
-    }
-    saveCart(cart);
+/* ========================
+   MAIN CONTENT
+   ======================== */
+main {
+    flex: 1;
+    position: relative;
+    padding: 40px;
 }
 
-// ======= UPDATE CART TOTAL =======
-function updateCartTotal() {
-    const cart = getCart();
-    let total = 0;
-    cart.forEach(item => total += item.price * item.quantity);
-    document.getElementById("cart-total").textContent = "R" + total.toFixed(2);
+main::before {
+    content: "";
+    position: absolute;
+    inset: 0;
+    background: rgba(0,0,0,0.3);
+    z-index: -1;
 }
 
-// ======= RENDER PRODUCTS =======
-function renderProducts() {
-    const container = document.getElementById("products-container");
-    container.innerHTML = "";
-
-    seedlingsProducts.forEach(prod => {
-        const card = document.createElement("div");
-        card.className = "product-card";
-
-        card.innerHTML = `
-            <img src="${prod.image}" alt="${prod.name}">
-            <h3>${prod.name}</h3>
-            <p>Fresh organic seedling for your garden.</p>
-            <div class="price">R${prod.price}</div>
-            <div class="qty-box">
-                <button class="minus">−</button>
-                <input type="number" min="1" value="1">
-                <button class="plus">+</button>
-            </div>
-            <button class="add-btn">Add to Cart</button>
-        `;
-
-        container.appendChild(card);
-
-        const qtyInput = card.querySelector("input");
-        const minusBtn = card.querySelector(".minus");
-        const plusBtn = card.querySelector(".plus");
-        const addBtn = card.querySelector(".add-btn");
-
-        minusBtn.addEventListener("click", () => {
-            if(parseInt(qtyInput.value) > 1) qtyInput.value = parseInt(qtyInput.value) - 1;
-        });
-
-        plusBtn.addEventListener("click", () => {
-            qtyInput.value = parseInt(qtyInput.value) + 1;
-        });
-
-        addBtn.addEventListener("click", () => {
-            addToCart(prod.name, prod.price, parseInt(qtyInput.value), prod.image);
-            addBtn.textContent = "Added!";
-            addBtn.disabled = true;
-            setTimeout(() => {
-                addBtn.textContent = "Add to Cart";
-                addBtn.disabled = false;
-            }, 1500);
-        });
-    });
+/* ========================
+   HEADER
+   ======================== */
+header.site-header {
+    background-color: rgba(47, 93, 58, 0.85);
+    padding: 15px 30px;
+    box-shadow: 0 2px 10px rgba(0,0,0,0.15);
 }
 
-// ======= INITIALIZE =======
-document.addEventListener("DOMContentLoaded", () => {
-    renderProducts();
-    updateCartTotal();
+.header-inner {
+    max-width: 1200px;
+    margin: 0 auto;
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    flex-wrap: wrap;
+}
 
-    // Hamburger menu toggle
-    const hamburger = document.querySelector('.hamburger');
-    const navMenu = document.querySelector('nav.nav');
-    hamburger.addEventListener('click', () => navMenu.classList.toggle('active'));
-});
-</script>
+/* ========================
+   LOGO
+   ======================== */
+.logo {
+    height: 110px;
+    width: auto;
+}
+
+@media (max-width: 992px) {
+    .logo { height: 90px; }
+}
+
+@media (max-width: 600px) {
+    .logo { height: 70px; margin-bottom: 10px; }
+}
+
+/* ========================
+   NAVIGATION
+   ======================== */
+nav.nav {
+    margin-top: 10px;
+    display: flex;
+    flex-wrap: wrap;
+    gap: 15px;
+}
+
+nav.nav a {
+    color: white;
+    text-decoration: none;
+    font-weight: 600;
+    letter-spacing: 0.5px;
+}
+
+nav.nav a:hover {
+    opacity: 0.8;
+}
+
+/* ========================
+   CART ICON
+   ======================== */
+.cart {
+    font-size: 20px;
+    background: rgba(0,0,0,0.3);
+    padding: 5px 8px;
+    border-radius: 5px;
+}
+
+/* ========================
+   HERO SECTION
+   ======================== */
+.hero {
+    position: relative;
+    min-height: 80vh;
+    display: flex;
+    flex-direction: column;
+    justify-content: center;
+    align-items: center;
+    text-align: center;
+    padding: 0 20px;
+}
+
+.hero::before {
+    content: "";
+    position: absolute;
+    inset: 0;
+    background: rgba(0,0,0,0.4);
+    z-index: -1;
+}
+
+/* ========================
+   PRODUCT CATEGORIES
+   ======================== */
+.product-categories, .products {
+    display: flex;
+    flex-wrap: wrap;
+    gap: 20px;
+    justify-content: center;
+    margin-top: 30px;
+}
+
+.category-card, .product-card {
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    background: rgba(47,93,58,0.85);
+    padding: 20px;
+    border-radius: 10px;
+    text-align: center;
+    width: 180px;
+    transition: transform 0.2s, background 0.2s;
+    box-shadow: 0 6px 12px rgba(0,0,0,0.3);
+}
+
+.category-card:hover, .product-card:hover {
+    transform: scale(1.05);
+    background: rgba(47,93,58,1);
+}
+
+.category-card img, .product-card img {
+    width: 80px;
+    height: 80px;
+    object-fit: contain;
+    margin-bottom: 10px;
+}
+
+.product-card img {
+    width: 120px;
+    height: 120px;
+}
+
+.product-card h3, .category-card h3 {
+    margin: 10px 0 5px;
+    font-size: 16px;
+}
+
+.product-card p {
+    font-size: 14px;
+    margin: 5px 0;
+}
+
+.price {
+    font-size: 18px;
+    font-weight: bold;
+    margin: 10px 0;
+}
+
+/* ========================
+   QUANTITY + ADD BUTTON
+   ======================== */
+.qty-box {
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    gap: 5px;
+    margin: 10px 0;
+}
+
+.qty-box button {
+    padding: 5px 10px;
+    font-size: 16px;
+    cursor: pointer;
+}
+
+.qty-box input {
+    width: 50px;
+    text-align: center;
+}
+
+.add-btn {
+    margin-top: 10px;
+    padding: 10px 16px;
+    background: rgba(47, 93, 58, 0.85);
+    color: white;
+    border: none;
+    border-radius: 6px;
+    cursor: pointer;
+    font-weight: bold;
+    transition: background 0.3s;
+}
+
+.add-btn:hover {
+    background: rgba(47, 93, 58, 1);
+}
+
+/* ========================
+   RESPONSIVE STYLES
+   ======================== */
+@media (max-width: 992px) {
+    .header-inner { flex-direction: column; align-items: flex-start; }
+    nav.nav { width: 100%; gap: 10px; justify-content: flex-start; }
+}
+
+@media (max-width: 600px) {
+    header.site-header { padding: 10px 15px; }
+    nav.nav { flex-direction: column; gap: 8px; display: none; }
+    nav.nav.active { display: flex; }
+    .hero { min-height: 60vh; padding: 0 15px; }
+    main { padding: 20px; }
+    .category-card, .product-card { width: 70%; }
+    .hamburger { display: block; font-size: 28px; cursor: pointer; }
+}
+
+/* ========================
+   FOOTER
+   ======================== */
+footer {
+    text-align: center;
+    padding: 15px 0;
+    background-color: rgba(47,93,58,0.85);
+    color: white;
+    font-size: 14px;
+    font-weight: bold;
+    box-shadow: 0 -2px 10px rgba(0,0,0,0.15);
+}
+
+footer a { color: white; text-decoration: none; }
+footer a:hover { text-decoration: underline; }
