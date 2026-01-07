@@ -219,14 +219,20 @@ function renderProducts() {
             qtyInput.value++;
         };
 
-        card.querySelector(".add-btn").onclick = () => {
+       card.querySelector(".add-btn").onclick = () => {
+    if (typeof addToCart !== "function") {
+        alert("Cart system not loaded");
+        return;
+    }
+
     addToCart(
         prod.name,
         prod.price,
-        parseInt(qtyInput.value),
+        parseInt(qtyInput.value) || 1,
         prod.image
     );
 };
+
 
 
 document.addEventListener("DOMContentLoaded", renderProducts);
