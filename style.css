@@ -2,22 +2,15 @@
    GLOBAL STYLES
    ======================== */
 html, body {
-    height: 100%; /* needed for footer placement */
+    height: 100%;
     margin: 0;
     font-family: Arial, sans-serif;
-    background-image: url('background.jpg');
-    background-size: cover;
-    background-position: center;
-    background-repeat: no-repeat;
-    background-attachment: fixed;
+    background: url('background.jpg') center/cover no-repeat fixed;
     color: white;
 }
 
-/* ========================
-   PAGE WRAPPER (for footer)
-   ======================== */
 .page-wrapper {
-    min-height: 100%;       
+    min-height: 100%;
     display: flex;
     flex-direction: column;
 }
@@ -26,30 +19,26 @@ html, body {
    MAIN CONTENT
    ======================== */
 main {
-    flex: 1; /* ensures footer stays at bottom */
-    position: relative;     
+    flex: 1;
+    position: relative;
     padding: 40px;
-    min-height: auto; /* auto height, flexible */
 }
 
 main::before {
     content: "";
     position: absolute;
-    top: 0;
-    left: 0;
-    width: 100%;
-    height: 100%;
-    background: rgba(0,0,0,0.3); 
+    inset: 0;
+    background: rgba(0,0,0,0.3);
     z-index: -1;
 }
 
 /* ========================
    HEADER
    ======================== */
-header, .site-header {
+header.site-header {
     background-color: rgba(47, 93, 58, 0.85);
     padding: 15px 30px;
-    box-shadow: 0 2px 10px rgba(0, 0, 0, 0.15);
+    box-shadow: 0 2px 10px rgba(0,0,0,0.15);
 }
 
 .header-inner {
@@ -62,44 +51,39 @@ header, .site-header {
 }
 
 /* ========================
-   LOGO SIZE
+   LOGO
    ======================== */
 .logo {
-    height: 110px !important;
-    width: auto !important;
+    height: 110px;
+    width: auto;
 }
 
 @media (max-width: 992px) {
-    .logo {
-        height: 90px !important;
-    }
+    .logo { height: 90px; }
 }
 
 @media (max-width: 600px) {
-    .logo {
-        height: 70px !important;
-        margin-bottom: 10px;
-    }
+    .logo { height: 70px; margin-bottom: 10px; }
 }
 
 /* ========================
    NAVIGATION
    ======================== */
-nav, .nav {
+nav.nav {
     margin-top: 10px;
     display: flex;
-    flex-wrap: wrap; 
+    flex-wrap: wrap;
     gap: 15px;
 }
 
-nav a, .nav a {
+nav.nav a {
     color: white;
     text-decoration: none;
     font-weight: 600;
     letter-spacing: 0.5px;
 }
 
-nav a:hover, .nav a:hover {
+nav.nav a:hover {
     opacity: 0.8;
 }
 
@@ -108,7 +92,7 @@ nav a:hover, .nav a:hover {
    ======================== */
 .cart {
     font-size: 20px;
-    background: rgba(0, 0, 0, 0.3);
+    background: rgba(0,0,0,0.3);
     padding: 5px 8px;
     border-radius: 5px;
 }
@@ -130,18 +114,15 @@ nav a:hover, .nav a:hover {
 .hero::before {
     content: "";
     position: absolute;
-    top: 0;
-    left: 0;
-    width: 100%;
-    height: 100%;
-    background: rgba(0,0,0,0.4); 
+    inset: 0;
+    background: rgba(0,0,0,0.4);
     z-index: -1;
 }
 
 /* ========================
    PRODUCT CATEGORIES
    ======================== */
-.product-categories {
+.product-categories, .products {
     display: flex;
     flex-wrap: wrap;
     gap: 20px;
@@ -149,34 +130,87 @@ nav a:hover, .nav a:hover {
     margin-top: 30px;
 }
 
-.category-card {
+.category-card, .product-card {
     display: flex;
     flex-direction: column;
     align-items: center;
-    text-decoration: none;
-    color: white;
-    background: rgba(47, 93, 58, 0.8);
+    background: rgba(47,93,58,0.85);
     padding: 20px;
     border-radius: 10px;
+    text-align: center;
     width: 180px;
     transition: transform 0.2s, background 0.2s;
+    box-shadow: 0 6px 12px rgba(0,0,0,0.3);
 }
 
-.category-card img {
+.category-card:hover, .product-card:hover {
+    transform: scale(1.05);
+    background: rgba(47,93,58,1);
+}
+
+.category-card img, .product-card img {
     width: 80px;
     height: 80px;
     object-fit: contain;
     margin-bottom: 10px;
 }
 
-.category-card h3 {
-    margin: 0;
-    text-align: center;
+.product-card img {
+    width: 120px;
+    height: 120px;
+}
+
+.product-card h3, .category-card h3 {
+    margin: 10px 0 5px;
     font-size: 16px;
 }
 
-.category-card:hover {
-    transform: scale(1.05);
+.product-card p {
+    font-size: 14px;
+    margin: 5px 0;
+}
+
+.price {
+    font-size: 18px;
+    font-weight: bold;
+    margin: 10px 0;
+}
+
+/* ========================
+   QUANTITY + ADD BUTTON
+   ======================== */
+.qty-box {
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    gap: 5px;
+    margin: 10px 0;
+}
+
+.qty-box button {
+    padding: 5px 10px;
+    font-size: 16px;
+    cursor: pointer;
+}
+
+.qty-box input {
+    width: 50px;
+    text-align: center;
+}
+
+.add-btn {
+    margin-top: 10px;
+    padding: 10px 16px;
+    background: rgba(47, 93, 58, 0.85);
+    color: white;
+    border: none;
+    border-radius: 6px;
+    cursor: pointer;
+    font-weight: bold;
+    transition: background 0.3s;
+}
+
+.add-btn:hover {
     background: rgba(47, 93, 58, 1);
 }
 
@@ -184,99 +218,32 @@ nav a:hover, .nav a:hover {
    RESPONSIVE STYLES
    ======================== */
 @media (max-width: 992px) {
-    .header-inner {
-        flex-direction: column;
-        align-items: flex-start;
-    }
-
-    nav, .nav {
-        width: 100%;
-        margin-top: 10px;
-        justify-content: flex-start;
-        gap: 10px;
-    }
+    .header-inner { flex-direction: column; align-items: flex-start; }
+    nav.nav { width: 100%; gap: 10px; justify-content: flex-start; }
 }
 
 @media (max-width: 600px) {
-    header, .site-header {
-        padding: 10px 15px;
-    }
-
-    nav, .nav {
-        flex-direction: column;
-        gap: 8px;
-    }
-
-    .hero {
-        min-height: 60vh;
-        padding: 0 15px;
-    }
-
-    main {
-        padding: 20px;
-    }
-
-    .product-categories {
-        flex-direction: column;
-        align-items: center;
-    }
-
-    .category-card {
-        width: 70%;
-    }
+    header.site-header { padding: 10px 15px; }
+    nav.nav { flex-direction: column; gap: 8px; display: none; }
+    nav.nav.active { display: flex; }
+    .hero { min-height: 60vh; padding: 0 15px; }
+    main { padding: 20px; }
+    .category-card, .product-card { width: 70%; }
+    .hamburger { display: block; font-size: 28px; cursor: pointer; }
 }
 
 /* ========================
-   HAMBURGER MENU
-   ======================== */
-.hamburger {
-    display: none;
-    font-size: 28px;
-    cursor: pointer;
-}
-
-@media (max-width: 600px) {
-    .hamburger {
-        display: block;
-    }
-
-    nav.nav {
-        display: none;
-        flex-direction: column;
-        width: 100%;
-    }
-
-    nav.nav.active {
-        display: flex;
-    }
-}
-
-/* ========================
-   SMART FOOTER WITH COPYRIGHT
+   FOOTER
    ======================== */
 footer {
     text-align: center;
     padding: 15px 0;
-    background-color: rgba(47, 93, 58, 0.85);
+    background-color: rgba(47,93,58,0.85);
     color: white;
     font-size: 14px;
     font-weight: bold;
-    box-shadow: 0 -2px 10px rgba(0, 0, 0, 0.15);
+    box-shadow: 0 -2px 10px rgba(0,0,0,0.15);
 }
 
-/* Example of links in footer */
-footer a {
-    color: white;
-    text-decoration: none;
-}
-
-footer a:hover {
-    text-decoration: underline;
-}
-
-@media (max-width: 600px) {
-    footer {
-        padding: 10px 5px;
-        font-size: 13px;
-    }
-}
+footer a { color: white; text-decoration: none; }
+footer a:hover { text-decoration: underline; }
