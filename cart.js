@@ -33,7 +33,7 @@ function updateCartDisplay()
 }
 
 // Add item to cart
-function addToCart(name, price, pack = "", quantity = 1, image = "") {
+function addToCart(name, price, pack, quantity, image)
     if (!name || isNaN(price) || price < 0 || quantity < 1) {
         console.error("Invalid cart data");
         return;
