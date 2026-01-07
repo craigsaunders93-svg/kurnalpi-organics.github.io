@@ -155,7 +155,9 @@ footer {
 <script src="cart.js"></script>
 
 <script>
-// ===== PRODUCTS =====
+// =====================
+// GARDEN PRODUCTS DATA
+// =====================
 const products = [
     {
         name: "Bird Feeder",
@@ -183,9 +185,13 @@ const products = [
     }
 ];
 
-// ===== RENDER PRODUCTS =====
+// =====================
+// RENDER PRODUCTS
+// =====================
 function renderProducts() {
     const container = document.getElementById("products-container");
+    if (!container) return;
+
     container.innerHTML = "";
 
     products.forEach(prod => {
@@ -199,43 +205,50 @@ function renderProducts() {
             <div class="price">R${prod.price.toFixed(2)}</div>
 
             <div class="qty-box">
-                <button class="minus">−</button>
-                <input type="number" value="1" min="1">
-                <button class="plus">+</button>
+                <button type="button" class="minus">−</button>
+                <input type="number" class="qty-input" value="1" min="1">
+                <button type="button" class="plus">+</button>
             </div>
 
-            <button class="add-btn">Add to Cart</button>
+            <button type="button" class="add-btn">Add to Cart</button>
         `;
 
         container.appendChild(card);
 
-        const qtyInput = card.querySelector("input");
+        const qtyInput = card.querySelector(".qty-input");
 
-        card.querySelector(".minus").onclick = () => {
-            if (qtyInput.value > 1) qtyInput.value--;
-        };
+        card.querySelector(".minus").addEventListener("click", () => {
+            const value = parseInt(qtyInput.value) || 1;
+            if (value > 1) qtyInput.value = value - 1;
+        });
 
-        card.querySelector(".plus").onclick = () => {
-            qtyInput.value++;
-        };
+        card.querySelector(".plus").addEventListener("click", () => {
+            const value = parseInt(qtyInput.value) || 1;
+            qtyInput.value = value + 1;
+        });
 
-       card.querySelector(".add-btn").onclick = () => {
-    if (typeof addToCart !== "function") {
-        alert("Cart system not loaded");
-        return;
-    }
+        card.querySelector(".add-btn").addEventListener("click", () => {
+            if (typeof addToCart !== "function") {
+                alert("Cart system not loaded");
+                return;
+            }
 
-    addToCart(
-        prod.name,
-        prod.price,
-        parseInt(qtyInput.value) || 1,
-        prod.image
-    );
-};
+            addToCart(
+                prod.name,
+                prod.price,
+                parseInt(qtyInput.value) || 1,
+                prod.image
+            );
+        });
+    });
+}
 
-
-
+// =====================
+// INIT
+// =====================
 document.addEventListener("DOMContentLoaded", renderProducts);
+</script>
+
 </script>
 
 <script>
