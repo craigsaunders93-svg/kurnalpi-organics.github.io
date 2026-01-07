@@ -184,6 +184,8 @@ function updateCartTotal() {
     cart.forEach(item => total += item.price * item.quantity);
     document.getElementById("cart-total").textContent = "R" + total.toFixed(2);
 }
+   <script src="cart.js"></script>
+}
 // ======= RENDER PRODUCTS =======
 function renderProducts() {
     const container = document.getElementById("products-container");
