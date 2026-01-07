@@ -50,7 +50,6 @@ function addToCart(name, price, quantity = 1, image = "", pack = "") {
     }
 
     saveCart(cart);
-    alert(`Added ${quantity} x ${name} to cart!`);
 }
 
 // ========================
