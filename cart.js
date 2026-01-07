@@ -33,15 +33,17 @@ function updateCartDisplay()
 }
 
 // Add item to cart
-function addToCart(name, price, pack, quantity, image)
+function addToCart(name, price, quantity = 1, image = "", pack = "") {
     if (!name || isNaN(price) || price < 0 || quantity < 1) {
         console.error("Invalid cart data");
         return;
     }
 
     let cart = getCart();
-    // Check if same item with same pack exists
-    const existingItem = cart.find(item => item.name === name && item.pack === pack);
+
+    const existingItem = cart.find(
+        item => item.name === name && item.pack === pack
+    );
 
     if (existingItem) {
         existingItem.quantity += quantity;
@@ -52,6 +54,7 @@ function addToCart(name, price, pack, quantity, image)
     saveCart(cart);
     alert(`Added ${quantity} x ${name} to cart!`);
 }
+
 
 // ========================
 // RENDER CART PAGE
