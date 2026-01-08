@@ -185,6 +185,7 @@ const products = [
     }
 ];
 
+<script>
 // ===== RENDER PRODUCTS =====
 function renderProducts() {
     const container = document.getElementById("products-container");
@@ -192,14 +193,14 @@ function renderProducts() {
 
     container.innerHTML = "";
 
-    garden ornamentsProducts.forEach(prod => {
+    products.forEach(prod => {
         const card = document.createElement("div");
         card.className = "product-card";
 
         card.innerHTML = `
             <img src="${prod.image}" alt="${prod.name}">
             <h3>${prod.name}</h3>
-            <p>${prod.description}</p>
+            <p>${prod.desc}</p>
             <div class="price">R${prod.price}</div>
             <div class="qty-box">
                 <button class="minus">−</button>
@@ -210,9 +211,20 @@ function renderProducts() {
         `;
 
         const qtyInput = card.querySelector("input");
-        card.querySelector(".minus").onclick = () => { if(qtyInput.value > 1) qtyInput.value--; };
-        card.querySelector(".plus").onclick = () => { qtyInput.value++; };
-        card.querySelector(".add-btn").onclick = () => { addToCart(prod.name, prod.price, parseInt(qtyInput.value), prod.image); };
+        card.querySelector(".minus").onclick = () => {
+            if (qtyInput.value > 1) qtyInput.value--;
+        };
+        card.querySelector(".plus").onclick = () => {
+            qtyInput.value++;
+        };
+        card.querySelector(".add-btn").onclick = () => {
+            addToCart(
+                prod.name,
+                prod.price,
+                parseInt(qtyInput.value),
+                prod.image
+            );
+        };
 
         container.appendChild(card);
     });
@@ -220,6 +232,3 @@ function renderProducts() {
 
 document.addEventListener("DOMContentLoaded", renderProducts);
 </script>
-
-</body>
-</html>
