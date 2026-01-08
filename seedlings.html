@@ -8,9 +8,6 @@
 <link rel="stylesheet" href="style.css">
 
 <style>
-/* ========================
-   PAGE + FOOTER SUPPORT
-   ======================== */
 html, body {
     height: 100%;
     margin: 0;
@@ -36,13 +33,11 @@ main::before {
     z-index: -1;
 }
 
-/* ========================
-   PRODUCT GRID
-   ======================== */
+/* PRODUCT GRID */
 .products {
     display: grid;
-    grid-template-columns: repeat(auto-fit, minmax(250px, 1fr));
-    gap: 25px;
+    grid-template-columns: repeat(auto-fit, minmax(200px, 1fr));
+    gap: 15px;
     margin-top: 30px;
 }
 
@@ -76,6 +71,7 @@ main::before {
     margin: 10px 0;
 }
 
+/* QUANTITY */
 .qty-box {
     display: flex;
     justify-content: center;
@@ -95,6 +91,7 @@ main::before {
     text-align: center;
 }
 
+/* ADD BUTTON */
 .add-btn {
     margin-top: 10px;
     padding: 10px 16px;
@@ -109,9 +106,7 @@ main::before {
     background: #ffcc00;
 }
 
-/* ========================
-   FOOTER
-   ======================== */
+/* FOOTER */
 footer {
     text-align: center;
     padding: 15px 0;
@@ -127,7 +122,6 @@ footer {
 
 <div class="page-wrapper">
 
-<!-- HEADER -->
 <header class="site-header">
     <div class="header-inner">
         <a href="index.html">
@@ -146,7 +140,6 @@ footer {
     </div>
 </header>
 
-<!-- MAIN CONTENT -->
 <main>
     <h1>Seedlings</h1>
     <p>Organic seedlings to start your sustainable garden at home.</p>
@@ -154,7 +147,6 @@ footer {
     <div class="products" id="products-container"></div>
 </main>
 
-<!-- FOOTER -->
 <footer>
     &copy; 2026 Kurnalpi Organics. All rights reserved.
 </footer>
@@ -164,10 +156,30 @@ footer {
 <script>
 // ======= PRODUCTS =======
 const seedlingsProducts = [
-    {name: "Tomato Seedling", price: 35, image: "tomato-seedling.png"},
-    {name: "Basil Seedling", price: 25, image: "basil-seedling.png"},
-    {name: "Lettuce Seedling", price: 30, image: "lettuce-seedling.png"},
-    {name: "Spinach Seedling", price: 28, image: "spinach-seedling.png"}
+    {
+        name: "Tomato Seedling",
+        price: 35,
+        image: "tomato-seedling.png",
+        description: "Healthy organic tomato seedling ready to grow in your garden."
+    },
+    {
+        name: "Basil Seedling",
+        price: 25,
+        image: "basil-seedling.png",
+        description: "Fragrant basil seedling perfect for fresh herbs and cooking."
+    },
+    {
+        name: "Lettuce Seedling",
+        price: 30,
+        image: "lettuce-seedling.png",
+        description: "Crisp and fresh lettuce seedling to start your salad garden."
+    },
+    {
+        name: "Spinach Seedling",
+        price: 28,
+        image: "spinach-seedling.png",
+        description: "Organic spinach seedlings for nutrient-rich leafy greens."
+    }
 ];
 
 // ======= CART FUNCTIONS =======
@@ -184,6 +196,13 @@ function updateCartTotal() {
     cart.forEach(item => total += item.price * item.quantity);
     document.getElementById("cart-total").textContent = "R" + total.toFixed(2);
 }
+function addToCart(name, price, quantity=1, image="") {
+    let cart = getCart();
+    const existing = cart.find(item => item.name === name);
+    if(existing) existing.quantity += quantity;
+    else cart.push({name, price, quantity, image});
+    saveCart(cart);
+}
 
 // ======= RENDER PRODUCTS =======
 function renderProducts() {
@@ -193,18 +212,22 @@ function renderProducts() {
     seedlingsProducts.forEach(prod => {
         const card = document.createElement("div");
         card.className = "product-card";
+
         card.innerHTML = `
             <img src="${prod.image}" alt="${prod.name}">
             <h3>${prod.name}</h3>
-            <p>Fresh organic seedling for your garden.</p>
+            <p>${prod.description}</p>
             <div class="price">R${prod.price}</div>
+
             <div class="qty-box">
                 <button class="minus">−</button>
-                <input type="number" min="1" value="1">
+                <input type="number" value="1" min="1">
                 <button class="plus">+</button>
             </div>
+
             <button class="add-btn">Add to Cart</button>
         `;
+
         container.appendChild(card);
 
         const qtyInput = card.querySelector("input");
@@ -230,5 +253,5 @@ const navMenu = document.getElementById('nav-menu');
 hamburger.addEventListener('click', () => navMenu.classList.toggle('active'));
 </script>
 
-<!-- Include cart.js separately -->
-<script src="cart.js"></script>
+</body>
+</html>
