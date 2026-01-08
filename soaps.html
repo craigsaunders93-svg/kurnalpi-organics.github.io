@@ -203,16 +203,30 @@ function renderProducts() {
         card.innerHTML = `
             <img src="${prod.image}" alt="${prod.name}">
             <h3>${prod.name}</h3>
-            <p class="product-desc">${prod.description}</p>
+            <p>${prod.description}</p>
             <div class="price">R${prod.price}</div>
+            <div class="qty-box">
+                <button class="minus">−</button>
+                <input type="number" min="1" value="1">
+                <button class="plus">+</button>
+            </div>
             <button class="add-btn">Add to Cart</button>
         `;
+
+        // Attach quantity + add button functionality
+        const qtyInput = card.querySelector("input");
+        card.querySelector(".minus").onclick = () => { if(qtyInput.value > 1) qtyInput.value--; };
+        card.querySelector(".plus").onclick = () => { qtyInput.value++; };
+        card.querySelector(".add-btn").onclick = () => {
+            addToCart(prod.name, prod.price, parseInt(qtyInput.value), prod.image);
+        };
 
         container.appendChild(card);
     });
 }
 
 document.addEventListener("DOMContentLoaded", renderProducts);
+</script>
         container.appendChild(card);
 
         const qtyInput = card.querySelector("input");
