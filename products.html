@@ -75,11 +75,13 @@ main {
 ========================= */
 .categories-container {
     display: grid;
-    grid-template-columns: repeat(auto-fit, minmax(180px, 1fr));
+    grid-template-columns: repeat(auto-fit, minmax(180px, max-content));
+    justify-content: center;
     gap: 20px;
     max-width: 1200px;
     margin: 30px auto 0;
 }
+
 
 /* ========================
    CATEGORY CARD
