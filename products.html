@@ -73,37 +73,33 @@ main {
 /* ========================
    CATEGORY GRID
 ========================= */
-.categories-container {
+.products {
     display: grid;
-    grid-template-columns: repeat(auto-fit, minmax(180px, 1fr));
+    grid-template-columns: repeat(auto-fit, minmax(220px, 1fr));
     gap: 15px;
     max-width: 1200px;
     margin: 30px auto 0;
 }
 
-.category-card {
+.product-card {
     background: rgba(47, 93, 58, 0.85);
-    border-radius: 10px;
     padding: 15px;
+    border-radius: 10px;
     text-align: center;
+    box-shadow: 0 6px 12px rgba(0,0,0,0.3);
     transition: transform 0.2s, background 0.2s;
-    cursor: pointer;
-    display: flex;
-    flex-direction: column;
-    align-items: center;
 }
 
-.category-card:hover {
-    transform: scale(1.05);
+.product-card:hover {
+    transform: scale(1.03);
     background: rgba(47, 93, 58, 1);
 }
 
-.category-card img {
-    width: 130px;
-    height: 130px;
-    object-fit: cover;
-    border-radius: 8px;
-    margin-bottom: 15px;
+.product-card img {
+    width: 110px;
+    height: 110px;
+    object-fit: contain;
+    margin-bottom: 10px;
 }
 
 .category-card h3 {
