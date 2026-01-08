@@ -224,31 +224,6 @@ function renderProducts() {
 
 document.addEventListener("DOMContentLoaded", renderProducts);
 </script>
-        container.appendChild(card);
-
-        const qtyInput = card.querySelector("input");
-
-        card.querySelector(".minus").onclick = () => {
-            if (qtyInput.value > 1) qtyInput.value--;
-        };
-
-        card.querySelector(".plus").onclick = () => {
-            qtyInput.value++;
-        };
-
-        card.querySelector(".add-btn").onclick = () => {
-            addToCart(
-                prod.name,
-                prod.price,
-                parseInt(qtyInput.value),
-                prod.image
-            );
-        };
-    });
-}
-
-document.addEventListener("DOMContentLoaded", renderProducts);
-</script>
 
 </body>
 </html>
