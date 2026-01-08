@@ -191,31 +191,28 @@ const soapProducts = [
 
 // ===== RENDER PRODUCTS =====
 function renderProducts() {
-    document.addEventListener("DOMContentLoaded", () => {
-    renderProducts();
-    updateCartTotal();
-});
+    const container = document.getElementById("products-container");
+    if (!container) return;
 
+    container.innerHTML = "";
 
-    products.forEach(prod => {
+    soapProducts.forEach(prod => {
         const card = document.createElement("div");
         card.className = "product-card";
 
         card.innerHTML = `
             <img src="${prod.image}" alt="${prod.name}">
             <h3>${prod.name}</h3>
-            <p>${prod.description || ""}</p>
-            <div class="price">R${prod.price.toFixed(2)}</div>
-
-            <div class="qty-box">
-                <button class="minus">−</button>
-                <input type="number" value="1" min="1">
-                <button class="plus">+</button>
-            </div>
-
+            <p class="product-desc">${prod.description}</p>
+            <div class="price">R${prod.price}</div>
             <button class="add-btn">Add to Cart</button>
         `;
 
+        container.appendChild(card);
+    });
+}
+
+document.addEventListener("DOMContentLoaded", renderProducts);
         container.appendChild(card);
 
         const qtyInput = card.querySelector("input");
