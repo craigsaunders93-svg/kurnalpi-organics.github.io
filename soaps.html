@@ -213,7 +213,6 @@ function renderProducts() {
             <button class="add-btn">Add to Cart</button>
         `;
 
-        // Attach quantity + Add to Cart functionality
         const qtyInput = card.querySelector("input");
         card.querySelector(".minus").onclick = () => { if(qtyInput.value > 1) qtyInput.value--; };
         card.querySelector(".plus").onclick = () => { qtyInput.value++; };
