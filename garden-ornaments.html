@@ -35,6 +35,8 @@ main::before {
 
 /* PRODUCT GRID */
 .products-container {
+    max-width: 1200px;
+    margin: auto;
     display: grid;
     grid-template-columns: repeat(auto-fit, minmax(250px, 1fr));
     gap: 25px;
@@ -127,9 +129,7 @@ footer {
             <img src="logo.png" alt="Kurnalpi Organics Logo" class="logo">
         </a>
 
-        <div class="hamburger" id="hamburger">&#9776;</div>
-
-        <nav class="nav" id="nav-menu">
+        <nav class="nav">
             <a href="index.html">Home</a>
             <a href="about.html">About</a>
             <a href="products.html">Products</a>
@@ -140,8 +140,8 @@ footer {
 </header>
 
 <main>
-    <h1>Garden Ornaments</h1>
-    <p>Beautify your garden with our unique, handcrafted ornaments.</p>
+    <h1 style="text-align:center;">Natural Soaps</h1>
+    <p style="text-align:center;">Handmade soaps using natural, skin-friendly ingredients.</p>
 
     <div class="products-container" id="products-container"></div>
 </main>
@@ -185,76 +185,40 @@ const products = [
     }
 ];
 
-// =====================
-// RENDER PRODUCTS
-// =====================
+// ===== RENDER PRODUCTS =====
 function renderProducts() {
     const container = document.getElementById("products-container");
     if (!container) return;
 
     container.innerHTML = "";
 
-    products.forEach(prod => {
+    soapProducts.forEach(prod => {
         const card = document.createElement("div");
         card.className = "product-card";
 
         card.innerHTML = `
             <img src="${prod.image}" alt="${prod.name}">
             <h3>${prod.name}</h3>
-            <p>${prod.desc}</p>
-            <div class="price">R${prod.price.toFixed(2)}</div>
-
+            <p>${prod.description}</p>
+            <div class="price">R${prod.price}</div>
             <div class="qty-box">
-                <button type="button" class="minus">−</button>
-                <input type="number" class="qty-input" value="1" min="1">
-                <button type="button" class="plus">+</button>
+                <button class="minus">−</button>
+                <input type="number" min="1" value="1">
+                <button class="plus">+</button>
             </div>
-
-            <button type="button" class="add-btn">Add to Cart</button>
+            <button class="add-btn">Add to Cart</button>
         `;
 
+        const qtyInput = card.querySelector("input");
+        card.querySelector(".minus").onclick = () => { if(qtyInput.value > 1) qtyInput.value--; };
+        card.querySelector(".plus").onclick = () => { qtyInput.value++; };
+        card.querySelector(".add-btn").onclick = () => { addToCart(prod.name, prod.price, parseInt(qtyInput.value), prod.image); };
+
         container.appendChild(card);
-
-        const qtyInput = card.querySelector(".qty-input");
-
-        card.querySelector(".minus").addEventListener("click", () => {
-            const value = parseInt(qtyInput.value) || 1;
-            if (value > 1) qtyInput.value = value - 1;
-        });
-
-        card.querySelector(".plus").addEventListener("click", () => {
-            const value = parseInt(qtyInput.value) || 1;
-            qtyInput.value = value + 1;
-        });
-
-        card.querySelector(".add-btn").addEventListener("click", () => {
-            if (typeof addToCart !== "function") {
-                alert("Cart system not loaded");
-                return;
-            }
-
-            addToCart(
-                prod.name,
-                prod.price,
-                parseInt(qtyInput.value) || 1,
-                prod.image
-            );
-        });
     });
 }
 
-// =====================
-// INIT
-// =====================
 document.addEventListener("DOMContentLoaded", renderProducts);
-</script>
-
-</script>
-
-<script>
-const hamburger = document.getElementById('hamburger');
-const navMenu = document.getElementById('nav-menu');
-hamburger.addEventListener('click', () => navMenu.classList.toggle('active'));
 </script>
 
 </body>
