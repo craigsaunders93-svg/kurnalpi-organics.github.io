@@ -124,7 +124,9 @@ footer {
             <img src="logo.png" alt="Kurnalpi Organics Logo" class="logo">
         </a>
 
-        <nav class="nav">
+        <div class="hamburger" id="hamburger">&#9776;</div>
+
+        <nav class="nav" id="nav-menu">
             <a href="index.html">Home</a>
             <a href="about.html">About</a>
             <a href="products.html">Products</a>
@@ -136,6 +138,7 @@ footer {
 
 <main>
     <h1 style="text-align:center;">Garden Products</h1>
+    <p style="text-align:center;">Organic fertilizers and garden tools for your green space.</p>
 
     <div class="products-container" id="products-container"></div>
 </main>
@@ -150,17 +153,9 @@ footer {
 
 <script>
 // ===== PRODUCTS =====
-const products = [
-    {
-        name: "Garden Fertilizer",
-        price: 150,
-        image: "fertilizer.jpg"
-    },
-    {
-        name: "Garden Tools Set",
-        price: 250,
-        image: "tools.jpg"
-    }
+const gardenProducts = [
+    { name: "Garden Fertilizer", price: 150, image: "fertilizer.jpg" },
+    { name: "Garden Tools Set", price: 250, image: "tools.jpg" }
 ];
 
 // ===== RENDER PRODUCTS =====
@@ -168,7 +163,7 @@ function renderProducts() {
     const container = document.getElementById("products-container");
     container.innerHTML = "";
 
-    products.forEach(prod => {
+    gardenProducts.forEach(prod => {
         const card = document.createElement("div");
         card.className = "product-card";
 
@@ -205,6 +200,11 @@ function renderProducts() {
 }
 
 document.addEventListener("DOMContentLoaded", renderProducts);
+
+// ===== HAMBURGER MENU =====
+const hamburger = document.getElementById('hamburger');
+const navMenu = document.getElementById('nav-menu');
+hamburger.addEventListener('click', () => navMenu.classList.toggle('active'));
 </script>
 
 </body>
