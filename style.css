@@ -1,101 +1,142 @@
-<script src="cart.js"></script>
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>About Us – Kurnalpi Organics</title>
 
-<script>
-/* =============================
-   PRODUCT DATA
-   ============================= */
-const products = [
-    {
-        name: "Plant Base Plate",
-        price: 50,
-        image: "plantbase.jpg",
-        desc: `
-            Handcrafted cement moulds to accommodate succulent pot plants.<br>
-            Length: 150mm<br>
-            Width: 95mm
-        `
-    },
-    {
-        name: "Garden Gnome",
-        price: 120,
-        image: "garden-gnome.png",
-        desc: "Charming gnome to add character to your garden."
-    },
-    {
-        name: "Stone Fountain",
-        price: 450,
-        image: "stone-fountain.png",
-        desc: "Elegant stone fountain for a relaxing ambiance."
-    },
-    {
-        name: "Solar Garden Lamp",
-        price: 200,
-        image: "solar-lamp.png",
-        desc: "Eco-friendly solar-powered garden lamp."
-    }
-];
+<link rel="stylesheet" href="style.css">
 
-/* =============================
-   RENDER PRODUCTS
-   ============================= */
-function renderProducts() {
-    const container = document.getElementById("products-container");
-    if (!container) return;
-
-    container.innerHTML = "";
-
-    products.forEach(product => {
-        const card = document.createElement("div");
-        card.className = "product-card";
-
-        card.innerHTML = `
-            <img src="${product.image}" alt="${product.name}">
-            <h3>${product.name}</h3>
-            <p>${product.desc}</p>
-            <div class="price">R${product.price}</div>
-
-            <div class="qty-box">
-                <button class="minus">−</button>
-                <input type="number" value="1" min="1">
-                <button class="plus">+</button>
-            </div>
-
-            <button class="add-btn">Add to Cart</button>
-        `;
-
-        const qtyInput = card.querySelector("input");
-        const minusBtn = card.querySelector(".minus");
-        const plusBtn = card.querySelector(".plus");
-        const addBtn = card.querySelector(".add-btn");
-
-        minusBtn.addEventListener("click", () => {
-            if (qtyInput.value > 1) qtyInput.value--;
-        });
-
-        plusBtn.addEventListener("click", () => {
-            qtyInput.value++;
-        });
-
-        addBtn.addEventListener("click", () => {
-            if (typeof addToCart !== "function") {
-                console.error("Cart system not loaded");
-                return;
-            }
-
-            addToCart(
-                product.name,
-                product.price,
-                parseInt(qtyInput.value),
-                product.image
-            );
-        });
-
-        container.appendChild(card);
-    });
+<style>
+/* ========================
+   ABOUT PAGE CONTENT
+   ======================== */
+.about-container {
+    max-width: 900px;
+    margin: auto;
+    background: rgba(47, 93, 58, 0.85);
+    padding: 40px;
+    border-radius: 14px;
+    box-shadow: 0 8px 16px rgba(0,0,0,0.35);
+    text-align: center;
 }
 
-/* =============================
-   LOAD PRODUCTS
-   ============================= */
-document.addEventListener("DOMContentLoaded", renderProducts);
-</script>
+.about-container h1 {
+    margin-bottom: 20px;
+    font-size: 32px;
+}
+
+.about-container p {
+    font-size: 16px;
+    line-height: 1.7;
+    margin-bottom: 20px;
+}
+
+.about-values {
+    display: grid;
+    grid-template-columns: repeat(auto-fit, minmax(220px, 1fr));
+    gap: 20px;
+    margin-top: 30px;
+}
+
+.value-box {
+    background: rgba(0,0,0,0.25);
+    padding: 20px;
+    border-radius: 10px;
+}
+
+.value-box h3 {
+    margin-bottom: 10px;
+}
+</style>
+</head>
+
+<body>
+
+<div class="page-wrapper">
+
+<!-- ========================
+     HEADER
+     ======================== -->
+<header class="site-header">
+    <div class="header-inner">
+        <a href="index.html">
+            <img src="logo.png" alt="Kurnalpi Organics Logo" class="logo">
+        </a>
+
+        <nav class="nav">
+            <a href="index.html">Home</a>
+            <a href="about.html">About</a>
+            <a href="products.html">Products</a>
+            <a href="contact.html">Contact Us</a>
+            <a href="cart.html" class="cart">
+                🛒 <span id="cart-total">R0</span>
+            </a>
+        </nav>
+    </div>
+</header>
+
+<!-- ========================
+     MAIN CONTENT
+     ======================== -->
+<main>
+    <div class="about-container">
+        <h1>About Kurnalpi Organics</h1>
+
+        <p>
+            Kurnalpi Organics was founded with a simple mission: to create
+            natural, sustainable, and ethically crafted products that support
+            both people and the environment.
+        </p>
+
+        <p>
+            From handcrafted garden ornaments and seedling products to natural
+            soaps and wellness items, every product is made with care, purpose,
+            and respect for nature.
+        </p>
+
+        <p>
+            We believe in small-batch production, responsible sourcing, and
+            supporting a healthier, more sustainable lifestyle.
+        </p>
+
+        <div class="about-values">
+            <div class="value-box">
+                <h3>🌱 Sustainability</h3>
+                <p>
+                    Eco-friendly materials and responsible practices guide
+                    everything we do.
+                </p>
+            </div>
+
+            <div class="value-box">
+                <h3>🖐 Handcrafted</h3>
+                <p>
+                    Each product is carefully handmade, ensuring quality and
+                    uniqueness.
+                </p>
+            </div>
+
+            <div class="value-box">
+                <h3>🤍 Natural Living</h3>
+                <p>
+                    Our products support a cleaner, healthier way of living.
+                </p>
+            </div>
+        </div>
+    </div>
+</main>
+
+<!-- ========================
+     FOOTER
+     ======================== -->
+<footer>
+    &copy; 2026 Kurnalpi Organics. All rights reserved.
+</footer>
+
+</div>
+
+<script src="cart.js"></script>
+
+</body>
+</html>
