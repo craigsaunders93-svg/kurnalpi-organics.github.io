@@ -90,15 +90,14 @@ async function sendEmailNotification(message, paymentMethod = "Online") {
         const response = await fetch("http://localhost:5000/send-email", {
   method: "POST",
   headers: { "Content-Type": "application/json" },
-  body: JSON.stringify({ message, orderRef: ORDER_REF, paymentMethod, toEmail: "kurnalpiorganics@gmail.com" })
+  body: JSON.stringify({
+    message,
+    orderRef: ORDER_REF,
+    paymentMethod,
+    toEmail: "kurnalpiorganics@gmail.com"
+  })
 });
 
-                message,
-                orderRef: ORDER_REF,
-                paymentMethod,
-                toEmail: "kurnalpiorganics@gmail.com"
-            })
-        });
 
         const data = await response.json();
         if (!response.ok) throw new Error(data.error || "Unknown server error");
