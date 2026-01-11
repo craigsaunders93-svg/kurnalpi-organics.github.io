@@ -51,8 +51,10 @@ function loadCheckout() {
         return;
     }
 
+    // Generate unique order reference
     ORDER_REF = generateOrderReference();
-    document.getElementById("eft-ref").textContent = ORDER_REF;
+    const eftRefInput = document.getElementById("eft-ref");
+    if (eftRefInput) eftRefInput.value = ORDER_REF;
 
     let subtotal = 0;
     const tbody = document.getElementById("order-items");
@@ -136,12 +138,10 @@ function sendEmailNotification(message) {
 // --------------------
 async function checkoutWhatsApp() {
     const message = buildMessage();
-    // Open WhatsApp immediately
     window.open(
         `https://wa.me/27615136124?text=${encodeURIComponent(message)}`,
         "_blank"
     );
-    // Wait for email notification before completing order
     const emailSent = await sendEmailNotification(message);
     if (emailSent) completeOrder();
     else alert("Email could not be sent. Order still recorded in WhatsApp.");
@@ -158,12 +158,29 @@ async function checkoutEmail() {
 }
 
 // --------------------
-// EFT
+// EFT CHECKOUT
 // --------------------
 function showEFT() {
-    document.getElementById("eft-box").style.display = "block";
+    const eftBox = document.getElementById("eft-box");
+    const eftRefInput = document.getElementById("eft-ref");
+
+    if (!ORDER_REF) ORDER_REF = generateOrderReference();
+    if (eftRefInput) eftRefInput.value = ORDER_REF;
+
+    eftBox.style.display = "block";
 }
 
+// Copy EFT reference
+function copyEFTRef() {
+    const eftRefInput = document.getElementById("eft-ref");
+    if (!eftRefInput) return;
+    eftRefInput.select();
+    eftRefInput.setSelectionRange(0, 99999);
+    document.execCommand("copy");
+    alert("Reference copied: " + eftRefInput.value);
+}
+
+// Confirm EFT payment
 async function eftConfirm() {
     const message = buildMessage("EFT");
     const emailSent = await sendEmailNotification(message);
