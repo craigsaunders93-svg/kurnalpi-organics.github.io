@@ -302,8 +302,13 @@ function showEFT() {
 }
 
 function eftConfirm() {
-    checkoutWhatsApp();
+    // Show a "Thank You" message or custom confirmation instead of WhatsApp
+    document.getElementById("eft-box").style.display = "none"; // Hide EFT payment info
+    completeOrder();  // Complete the order process
+
+    alert("Thank you! Your payment via EFT will be confirmed after we receive it. Please use the reference shown during the EFT transfer.");
 }
+
 
 // --------------------
 document.addEventListener("DOMContentLoaded", loadCheckout);
