@@ -233,10 +233,13 @@ function renderProducts() {
         // Determine if product has options (like Dragon Fruit)
         let optionsHTML = "";
         let initialPrice = prod.price || (prod.options ? prod.options[0].price : 0);
+        let initialStock = prod.stock || (prod.options ? prod.options[0].stock : 0);
+
         if(prod.options) {
             optionsHTML = `<select class="options-select">
-                ${prod.options.map(opt => `<option value="${opt.price}">${opt.label} - R${opt.price}</option>`).join("")}
+                ${prod.options.map(opt => `<option value="${opt.price}" data-stock="${opt.stock}">${opt.label} - R${opt.price}</option>`).join("")}
             </select>`;
+            initialStock = prod.options[0].stock; // stock of first option
         }
 
         card.innerHTML = `
@@ -245,6 +248,7 @@ function renderProducts() {
             <p>${prod.description}</p>
             <div class="price">R${initialPrice}</div>
             ${optionsHTML}
+            <p class="stock">Stock: ${initialStock}</p>
             <div class="qty-box">
                 <button class="minus">−</button>
                 <input type="number" min="1" value="1">
@@ -255,20 +259,36 @@ function renderProducts() {
 
         const qtyInput = card.querySelector("input");
         const priceDiv = card.querySelector(".price");
+        const stockDiv = card.querySelector(".stock");
         const select = card.querySelector(".options-select");
 
-        card.querySelector(".minus").onclick = () => { if(qtyInput.value > 1) qtyInput.value--; };
-        card.querySelector(".plus").onclick = () => { qtyInput.value++; };
+        let currentStock = initialStock;
 
-        // Update price if dropdown changes
+        // Handle minus/plus buttons
+        card.querySelector(".minus").onclick = () => { 
+            if(qtyInput.value > 1) qtyInput.value--; 
+        };
+        card.querySelector(".plus").onclick = () => { 
+            if(qtyInput.value < currentStock) qtyInput.value++; // cannot exceed stock
+        };
+
+        // Update price and stock if dropdown changes
         if(select) {
             select.onchange = () => {
                 priceDiv.textContent = "R" + select.value;
+                currentStock = parseInt(select.options[select.selectedIndex].dataset.stock);
+                stockDiv.textContent = "Stock: " + currentStock;
+                if(qtyInput.value > currentStock) qtyInput.value = currentStock;
             };
         }
 
+        // Add to cart
         card.querySelector(".add-btn").onclick = () => {
             const qty = parseInt(qtyInput.value);
+            if(qty > currentStock) {
+                alert("Not enough stock available.");
+                return;
+            }
             const price = select ? parseInt(select.value) : prod.price;
             const name = select ? `${prod.name} (${select.options[select.selectedIndex].text})` : prod.name;
             addToCart(name, price, qty, prod.image);
@@ -279,6 +299,7 @@ function renderProducts() {
 }
 
 document.addEventListener("DOMContentLoaded", renderProducts);
+
 </script>
 
 </body>
