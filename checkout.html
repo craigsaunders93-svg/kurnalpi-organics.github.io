@@ -3,6 +3,19 @@ const SHIPPING = 150;
 let ORDER_REF = null;
 
 // --------------------
+// INPUT ELEMENTS
+// --------------------
+let inputName, inputPhone, inputEmail, inputAddress, inputNotes;
+
+function initInputs() {
+    inputName = document.getElementById("name");
+    inputPhone = document.getElementById("phone");
+    inputEmail = document.getElementById("email");
+    inputAddress = document.getElementById("address");
+    inputNotes = document.getElementById("notes");
+}
+
+// --------------------
 // ORDER REFERENCE
 // --------------------
 function generateOrderReference() {
@@ -29,8 +42,9 @@ function clearCart() {
 // LOAD CHECKOUT
 // --------------------
 function loadCheckout() {
-    const cart = getCart();
+    initInputs();
 
+    const cart = getCart();
     if (cart.length === 0) {
         alert("Your cart is empty.");
         window.location.href = "cart.html";
@@ -65,7 +79,6 @@ function loadCheckout() {
 // --------------------
 function buildMessage() {
     const cart = getCart();
-
     let msg = `🧾 NEW ORDER\nReference: ${ORDER_REF}\n\n`;
 
     cart.forEach(item => {
@@ -73,12 +86,12 @@ function buildMessage() {
     });
 
     msg += `\nTotal (incl shipping): ${document.getElementById("total").textContent}\n\n`;
-    msg += `Name: ${name.value}\n`;
-    msg += `Phone: ${phone.value}\n`;
-    msg += `Email: ${email.value}\n`;
-    msg += `Address: ${address.value}\n`;
+    msg += `Name: ${inputName.value}\n`;
+    msg += `Phone: ${inputPhone.value}\n`;
+    msg += `Email: ${inputEmail.value}\n`;
+    msg += `Address: ${inputAddress.value}\n`;
 
-    if (notes.value) msg += `Notes: ${notes.value}\n`;
+    if (inputNotes.value) msg += `Notes: ${inputNotes.value}\n`;
 
     return msg;
 }
@@ -97,19 +110,16 @@ function completeOrder() {
 // --------------------
 function checkoutWhatsApp() {
     const message = buildMessage();
-
     sendEmailNotification(message);
-
     window.open(
         `https://wa.me/27615136124?text=${encodeURIComponent(message)}`,
         "_blank"
     );
-
     completeOrder();
 }
 
 // --------------------
-// EMAIL (BACKEND)
+// EMAIL CHECKOUT
 // --------------------
 function checkoutEmail() {
     const message = buildMessage();
@@ -117,6 +127,9 @@ function checkoutEmail() {
     completeOrder();
 }
 
+// --------------------
+// SEND EMAIL BACKEND
+// --------------------
 function sendEmailNotification(message) {
     fetch("http://localhost:5000/send-email", {
         method: "POST",
@@ -129,16 +142,9 @@ function sendEmailNotification(message) {
             toEmail: "kurnalpiorganics@gmail.com"
         })
     })
-    .then(res => {
-        if (!res.ok) throw new Error("Email failed");
-        return res.json();
-    })
-    .then(() => {
-        console.log("📧 Email sent:", ORDER_REF);
-    })
-    .catch(err => {
-        console.error("❌ Email error:", err.message);
-    });
+    .then(res => res.json())
+    .then(() => console.log("📧 Email sent:", ORDER_REF))
+    .catch(err => console.error("❌ Email error:", err.message));
 }
 
 // --------------------
@@ -150,10 +156,8 @@ function showEFT() {
 
 function eftConfirm() {
     const message = buildMessage() + "\nPayment Method: EFT";
-
     sendEmailNotification(message);
     completeOrder();
-
     alert(
         "Thank you! Please use this reference when making the EFT payment:\n\n" +
         ORDER_REF
