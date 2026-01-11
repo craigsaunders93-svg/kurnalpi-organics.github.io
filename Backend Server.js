@@ -1,21 +1,22 @@
+require('dotenv').config();
 const express = require('express');
 const nodemailer = require('nodemailer');
 const bodyParser = require('body-parser');
 const cors = require('cors');
 
 const app = express();
-const port = 5000;
+const port = process.env.PORT || 5000;
 
 // Middleware
 app.use(cors());
 app.use(bodyParser.json());
 
-// Nodemailer transport (Gmail + App Password)
+// Nodemailer transport
 const transporter = nodemailer.createTransport({
   service: 'gmail',
   auth: {
-    user: 'kurnalpiorganics@gmail.com',
-    pass: 'YOUR_NEW_APP_PASSWORD_NO_SPACES',
+    user: process.env.EMAIL_USER,
+    pass: process.env.EMAIL_PASS,
   },
 });
 
@@ -38,14 +39,14 @@ app.post('/send-email', async (req, res) => {
     }
 
     const mailOptions = {
-      from: '"Kurnalpi Organics" <kurnalpiorganics@gmail.com>',
+      from: `"Kurnalpi Organics" <${process.env.EMAIL_USER}>`,
       to: toEmail,
       subject: 'New Order from Kurnalpi Organics',
       text: message,
     };
 
-    const info = await transporter.sendMail(mailOptions);
-    console.log('📧 Email sent:', info.response);
+    await transporter.sendMail(mailOptions);
+    console.log('📧 Order email sent');
 
     res.status(200).json({ success: true });
   } catch (error) {
