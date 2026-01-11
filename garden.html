@@ -73,6 +73,13 @@ main::before {
     margin: 10px 0;
 }
 
+.stock {
+    font-size: 14px;
+    font-weight: bold;
+    color: #fff;
+    margin-bottom: 10px;
+}
+
 /* QUANTITY */
 .qty-box {
     display: flex;
@@ -141,7 +148,7 @@ footer {
 
 <main>
     <h1 style="text-align:center;">Garden</h1>
-    <p style="text-align:center;">Organic fertilizers, tools, and gardening essentials to grow your green space naturally..</p>
+    <p style="text-align:center;">Organic fertilizers, tools, and gardening essentials to grow your green space naturally.</p>
 
     <div class="products-container" id="products-container"></div>
 </main>
@@ -155,23 +162,25 @@ footer {
 <script src="cart.js"></script>
 
 <script>
-// ===== PRODUCTS =====
+// ===== PRODUCTS WITH STOCK =====
 const gardenProducts = [
     {
         name: "Garden Fertilizer",
         price: 150,
+        stock: 20,
         image: "fertilizer.jpg",
         description: "Nutrient-rich organic fertilizer that promotes healthy plant growth and vibrant blooms."
     },
     {
         name: "Garden Tools Set",
         price: 250,
+        stock: 10,
         image: "tools.jpg",
         description: "Complete set of durable garden tools for planting, pruning, and general garden maintenance."
     }
 ];
 
-// ===== RENDER PRODUCTS =====
+// ===== RENDER PRODUCTS WITH STOCK =====
 function renderProducts() {
     const container = document.getElementById("products-container");
     if (!container) return;
@@ -187,24 +196,43 @@ function renderProducts() {
             <h3>${prod.name}</h3>
             <p>${prod.description}</p>
             <div class="price">R${prod.price}</div>
+            <div class="stock">Stock: ${prod.stock}</div>
             <div class="qty-box">
                 <button class="minus">−</button>
-                <input type="number" min="1" value="1">
+                <input type="number" min="1" max="${prod.stock}" value="1">
                 <button class="plus">+</button>
             </div>
             <button class="add-btn">Add to Cart</button>
         `;
 
         const qtyInput = card.querySelector("input");
-        card.querySelector(".minus").onclick = () => { if(qtyInput.value > 1) qtyInput.value--; };
-        card.querySelector(".plus").onclick = () => { qtyInput.value++; };
-        card.querySelector(".add-btn").onclick = () => { addToCart(prod.name, prod.price, parseInt(qtyInput.value), prod.image); };
+        const minusBtn = card.querySelector(".minus");
+        const plusBtn = card.querySelector(".plus");
+        const addBtn = card.querySelector(".add-btn");
+
+        minusBtn.onclick = () => {
+            if(parseInt(qtyInput.value) > 1) qtyInput.value = parseInt(qtyInput.value) - 1;
+        };
+        plusBtn.onclick = () => {
+            if(parseInt(qtyInput.value) < prod.stock) qtyInput.value = parseInt(qtyInput.value) + 1;
+        };
+        addBtn.onclick = () => {
+            const qty = parseInt(qtyInput.value);
+            if(qty > prod.stock){
+                alert(`Only ${prod.stock} in stock!`);
+                return;
+            }
+            addToCart(prod.name, prod.price, qty, prod.image);
+        };
 
         container.appendChild(card);
     });
 }
 
-document.addEventListener("DOMContentLoaded", renderProducts);
+// ===== INITIALIZE =====
+document.addEventListener("DOMContentLoaded", () => {
+    renderProducts();
+});
 </script>
 
 </body>
