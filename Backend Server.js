@@ -7,6 +7,7 @@ const cors = require('cors');
 const app = express();
 const port = process.env.PORT || 5000;
 
+// Middleware
 app.use(cors());
 app.use(bodyParser.json());
 
@@ -14,13 +15,12 @@ app.use(bodyParser.json());
 const transporter = nodemailer.createTransport({
   service: 'gmail',
   auth: {
-   EMAIL_USER=kurnalpiorganics@gmail.com
-EMAIL_PASS=hdnccafiakstyqgw
-PORT=5000
+    user: process.env.EMAIL_USER, // your Gmail from .env
+    pass: process.env.EMAIL_PASS, // Gmail App Password from .env
   },
 });
 
-// Verify connection
+// Verify connection to Gmail
 transporter.verify((error, success) => {
   if (error) console.error('❌ Gmail connection error:', error);
   else console.log('✅ Gmail ready to send emails');
@@ -31,6 +31,7 @@ app.post('/send-email', async (req, res) => {
   try {
     const { message, toEmail, orderRef, paymentMethod } = req.body;
 
+    // Validate required fields
     if (!message || !toEmail || !orderRef) {
       return res.status(400).json({ error: 'Missing message, toEmail, or orderRef' });
     }
@@ -52,4 +53,5 @@ app.post('/send-email', async (req, res) => {
   }
 });
 
+// Start the server
 app.listen(port, () => console.log(`🚀 Server running at http://localhost:${port}`));
