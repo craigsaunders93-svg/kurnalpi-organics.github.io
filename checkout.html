@@ -77,9 +77,9 @@ function loadCheckout() {
 // --------------------
 // BUILD MESSAGE
 // --------------------
-function buildMessage() {
+function buildMessage(paymentMethod = "Online") {
     const cart = getCart();
-    let msg = `🧾 NEW ORDER\nReference: ${ORDER_REF}\n\n`;
+    let msg = `🧾 NEW ORDER\nReference: ${ORDER_REF}\nPayment Method: ${paymentMethod}\n\n`;
 
     cart.forEach(item => {
         msg += `${item.name} x ${item.quantity} - R${(item.price * item.quantity).toFixed(2)}\n`;
@@ -106,32 +106,10 @@ function completeOrder() {
 }
 
 // --------------------
-// WHATSAPP CHECKOUT
-// --------------------
-function checkoutWhatsApp() {
-    const message = buildMessage();
-    sendEmailNotification(message);
-    window.open(
-        `https://wa.me/27615136124?text=${encodeURIComponent(message)}`,
-        "_blank"
-    );
-    completeOrder();
-}
-
-// --------------------
-// EMAIL CHECKOUT
-// --------------------
-function checkoutEmail() {
-    const message = buildMessage();
-    sendEmailNotification(message);
-    completeOrder();
-}
-
-// --------------------
 // SEND EMAIL BACKEND
 // --------------------
 function sendEmailNotification(message) {
-    fetch("http://localhost:5000/send-email", {
+    return fetch("http://localhost:5000/send-email", {
         method: "POST",
         headers: {
             "Content-Type": "application/json"
@@ -143,8 +121,40 @@ function sendEmailNotification(message) {
         })
     })
     .then(res => res.json())
-    .then(() => console.log("📧 Email sent:", ORDER_REF))
-    .catch(err => console.error("❌ Email error:", err.message));
+    .then(() => {
+        console.log("📧 Email sent:", ORDER_REF);
+        return true;
+    })
+    .catch(err => {
+        console.error("❌ Email error:", err.message);
+        return false;
+    });
+}
+
+// --------------------
+// WHATSAPP CHECKOUT
+// --------------------
+async function checkoutWhatsApp() {
+    const message = buildMessage();
+    // Open WhatsApp immediately
+    window.open(
+        `https://wa.me/27615136124?text=${encodeURIComponent(message)}`,
+        "_blank"
+    );
+    // Wait for email notification before completing order
+    const emailSent = await sendEmailNotification(message);
+    if (emailSent) completeOrder();
+    else alert("Email could not be sent. Order still recorded in WhatsApp.");
+}
+
+// --------------------
+// EMAIL CHECKOUT
+// --------------------
+async function checkoutEmail() {
+    const message = buildMessage();
+    const emailSent = await sendEmailNotification(message);
+    if (emailSent) completeOrder();
+    else alert("Email could not be sent. Please try again.");
 }
 
 // --------------------
@@ -154,10 +164,10 @@ function showEFT() {
     document.getElementById("eft-box").style.display = "block";
 }
 
-function eftConfirm() {
-    const message = buildMessage() + "\nPayment Method: EFT";
-    sendEmailNotification(message);
-    completeOrder();
+async function eftConfirm() {
+    const message = buildMessage("EFT");
+    const emailSent = await sendEmailNotification(message);
+    if (emailSent) completeOrder();
     alert(
         "Thank you! Please use this reference when making the EFT payment:\n\n" +
         ORDER_REF
