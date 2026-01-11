@@ -7,114 +7,31 @@
 <link rel="stylesheet" href="style.css">
 
 <style>
-html, body {
-    height: 100%;
-    margin: 0;
-}
-
-.page-wrapper {
-    min-height: 100%;
-    display: flex;
-    flex-direction: column;
-}
-
-main {
-    flex: 1;
-    position: relative;
-    padding: 40px;
-}
-
-main::before {
-    content: "";
-    position: absolute;
-    inset: 0;
-    background: rgba(0,0,0,0.35);
-    z-index: -1;
-}
+html, body { height: 100%; margin: 0; }
+.page-wrapper { min-height: 100%; display: flex; flex-direction: column; }
+main { flex: 1; position: relative; padding: 40px; }
+main::before { content: ""; position: absolute; inset: 0; background: rgba(0,0,0,0.35); z-index: -1; }
 
 /* PRODUCT GRID */
-.products-container {
-    max-width: 1200px;
-    margin: auto;
-    display: grid;
-    grid-template-columns: repeat(auto-fit, minmax(250px, 1fr));
-    gap: 25px;
-    margin-top: 30px;
-}
-
-.product-card {
-    background: rgba(47, 93, 58, 0.85);
-    padding: 20px;
-    border-radius: 12px;
-    text-align: center;
-    box-shadow: 0 6px 12px rgba(0,0,0,0.3);
-}
-
-.product-card img {
-    width: 120px;
-    height: 120px;
-    object-fit: contain;
-    margin-bottom: 10px;
-}
-
-.product-card h3 {
-    margin: 10px 0 5px;
-}
-
-.product-card p {
-    font-size: 14px;
-    margin: 5px 0;
-}
-
-.price {
-    font-size: 18px;
-    font-weight: bold;
-    margin: 10px 0;
-}
+.products-container { max-width: 1200px; margin: auto; display: grid; grid-template-columns: repeat(auto-fit, minmax(250px, 1fr)); gap: 25px; margin-top: 30px; }
+.product-card { background: rgba(47, 93, 58, 0.85); padding: 20px; border-radius: 12px; text-align: center; box-shadow: 0 6px 12px rgba(0,0,0,0.3); }
+.product-card img { width: 120px; height: 120px; object-fit: contain; margin-bottom: 10px; }
+.product-card h3 { margin: 10px 0 5px; }
+.product-card p { font-size: 14px; margin: 5px 0; }
+.price { font-size: 18px; font-weight: bold; margin: 10px 0; }
+.stock { font-size: 14px; font-weight: bold; color: #fff; margin-bottom: 10px; }
 
 /* QUANTITY */
-.qty-box {
-    display: flex;
-    justify-content: center;
-    align-items: center;
-    gap: 6px;
-    margin: 10px 0;
-}
-
-.qty-box button {
-    padding: 5px 10px;
-    font-size: 16px;
-    cursor: pointer;
-}
-
-.qty-box input {
-    width: 50px;
-    text-align: center;
-}
+.qty-box { display: flex; justify-content: center; align-items: center; gap: 6px; margin: 10px 0; }
+.qty-box button { padding: 5px 10px; font-size: 16px; cursor: pointer; }
+.qty-box input { width: 50px; text-align: center; }
 
 /* ADD BUTTON */
-.add-btn {
-    background: #1f4d30;
-    color: white;
-    border: none;
-    padding: 10px 16px;
-    border-radius: 6px;
-    cursor: pointer;
-}
-
-.add-btn:hover {
-    background: #163823;
-}
+.add-btn { background: #1f4d30; color: white; border: none; padding: 10px 16px; border-radius: 6px; cursor: pointer; }
+.add-btn:hover { background: #163823; }
 
 /* FOOTER */
-footer {
-    text-align: center;
-    padding: 15px 0;
-    background-color: rgba(47, 93, 58, 0.85);
-    color: white;
-    font-size: 14px;
-    font-weight: bold;
-}
+footer { text-align: center; padding: 15px 0; background-color: rgba(47, 93, 58, 0.85); color: white; font-size: 14px; font-weight: bold; }
 </style>
 </head>
 <body>
@@ -151,31 +68,23 @@ footer {
 </div>
 
 <script>
-// ======= APPAREL PRODUCTS =======
+// ======= APPAREL PRODUCTS WITH STOCK =======
 const apparelProducts = [
-    {name: "Organic Cotton T-Shirt", price: 200, image: "tshirt.png", description: "Soft, breathable cotton t-shirt made from organic fibers."},
-    {name: "Eco Hat", price: 150, image: "hat.png", description: "Sustainable hat made from eco-friendly materials."},
-    {name: "Reusable Tote Bag", price: 120, image: "tote.png", description: "Durable tote bag to carry your essentials sustainably."},
-    {name: "Organic Hoodie", price: 400, image: "hoodie.png", description: "Comfortable hoodie made from 100% organic cotton."}
+    {name: "Organic Cotton T-Shirt", price: 200, stock: 12, image: "tshirt.png", description: "Soft, breathable cotton t-shirt made from organic fibers."},
+    {name: "Eco Hat", price: 150, stock: 20, image: "hat.png", description: "Sustainable hat made from eco-friendly materials."},
+    {name: "Reusable Tote Bag", price: 120, stock: 15, image: "tote.png", description: "Durable tote bag to carry your essentials sustainably."},
+    {name: "Organic Hoodie", price: 400, stock: 8, image: "hoodie.png", description: "Comfortable hoodie made from 100% organic cotton."}
 ];
 
 // ======= CART FUNCTIONS =======
-function getCart() {
-    return JSON.parse(localStorage.getItem("cart")) || [];
-}
-
-function saveCart(cart) {
-    localStorage.setItem("cart", JSON.stringify(cart));
-    updateCartTotal();
-}
-
+function getCart() { return JSON.parse(localStorage.getItem("cart")) || []; }
+function saveCart(cart) { localStorage.setItem("cart", JSON.stringify(cart)); updateCartTotal(); }
 function updateCartTotal() {
     const cart = getCart();
     let total = 0;
     cart.forEach(item => total += item.price * item.quantity);
     document.getElementById("cart-total").textContent = "R" + total.toFixed(2);
 }
-
 function addToCart(name, price, quantity=1, image="") {
     let cart = getCart();
     const existing = cart.find(item => item.name === name);
@@ -184,10 +93,10 @@ function addToCart(name, price, quantity=1, image="") {
     saveCart(cart);
 }
 
-// ======= RENDER PRODUCTS =======
+// ======= RENDER PRODUCTS WITH STOCK =======
 function renderProducts() {
     const container = document.getElementById("products-container");
-    if (!container) return;
+    if(!container) return;
 
     container.innerHTML = "";
 
@@ -200,18 +109,27 @@ function renderProducts() {
             <h3>${prod.name}</h3>
             <p>${prod.description}</p>
             <div class="price">R${prod.price}</div>
+            <div class="stock">Stock: ${prod.stock}</div>
             <div class="qty-box">
                 <button class="minus">−</button>
-                <input type="number" min="1" value="1">
+                <input type="number" min="1" max="${prod.stock}" value="1">
                 <button class="plus">+</button>
             </div>
             <button class="add-btn">Add to Cart</button>
         `;
 
         const qtyInput = card.querySelector("input");
-        card.querySelector(".minus").onclick = () => { if(qtyInput.value > 1) qtyInput.value--; };
-        card.querySelector(".plus").onclick = () => { qtyInput.value++; };
-        card.querySelector(".add-btn").onclick = () => { addToCart(prod.name, prod.price, parseInt(qtyInput.value), prod.image); };
+        const minusBtn = card.querySelector(".minus");
+        const plusBtn = card.querySelector(".plus");
+        const addBtn = card.querySelector(".add-btn");
+
+        minusBtn.onclick = () => { if(parseInt(qtyInput.value) > 1) qtyInput.value = parseInt(qtyInput.value) - 1; };
+        plusBtn.onclick = () => { if(parseInt(qtyInput.value) < prod.stock) qtyInput.value = parseInt(qtyInput.value) + 1; };
+        addBtn.onclick = () => {
+            const qty = parseInt(qtyInput.value);
+            if(qty > prod.stock) { alert(`Only ${prod.stock} in stock!`); return; }
+            addToCart(prod.name, prod.price, qty, prod.image);
+        };
 
         container.appendChild(card);
     });
