@@ -73,6 +73,13 @@ main::before {
     margin: 10px 0;
 }
 
+.stock {
+    font-size: 14px;
+    font-weight: bold;
+    color: #fff;
+    margin-bottom: 10px;
+}
+
 /* QUANTITY */
 .qty-box {
     display: flex;
@@ -155,17 +162,19 @@ footer {
 </div>
 
 <script>
-// ======= PRODUCTS =======
+// ======= PRODUCTS WITH STOCK =======
 const products = [
     {
         name: "Scented Candle",
         price: 120,
+        stock: 15,
         image: "candle.jpg",
         description: "Hand-poured scented candle with natural wax and soothing fragrance."
     },
     {
         name: "Diffuser Set",
         price: 220,
+        stock: 8,
         image: "diffuser.jpg",
         description: "Elegant diffuser set with long-lasting essential oils for a fresh home."
     }
@@ -188,12 +197,15 @@ function updateCartTotal() {
 function addToCart(name, price, quantity=1, image="") {
     let cart = getCart();
     const existing = cart.find(item => item.name === name);
-    if(existing) existing.quantity += quantity;
-    else cart.push({name, price, quantity, image});
+    if(existing) {
+        existing.quantity += quantity;
+    } else {
+        cart.push({name, price, quantity, image});
+    }
     saveCart(cart);
 }
 
-// ======= RENDER PRODUCTS =======
+// ======= RENDER PRODUCTS WITH STOCK =======
 function renderProducts() {
     const container = document.getElementById("products-container");
     container.innerHTML = "";
@@ -207,10 +219,11 @@ function renderProducts() {
             <h3>${prod.name}</h3>
             <p>${prod.description}</p>
             <div class="price">R${prod.price.toFixed(2)}</div>
+            <div class="stock">Stock: ${prod.stock}</div>
 
             <div class="qty-box">
                 <button class="minus">−</button>
-                <input type="number" value="1" min="1">
+                <input type="number" value="1" min="1" max="${prod.stock}">
                 <button class="plus">+</button>
             </div>
 
@@ -224,9 +237,20 @@ function renderProducts() {
         const plusBtn = card.querySelector(".plus");
         const addBtn = card.querySelector(".add-btn");
 
-        minusBtn.onclick = () => { if(parseInt(qtyInput.value) > 1) qtyInput.value = parseInt(qtyInput.value)-1; };
-        plusBtn.onclick = () => { qtyInput.value = parseInt(qtyInput.value)+1; };
-        addBtn.onclick = () => { addToCart(prod.name, prod.price, parseInt(qtyInput.value), prod.image); };
+        minusBtn.onclick = () => {
+            if(parseInt(qtyInput.value) > 1) qtyInput.value = parseInt(qtyInput.value)-1;
+        };
+        plusBtn.onclick = () => {
+            if(parseInt(qtyInput.value) < prod.stock) qtyInput.value = parseInt(qtyInput.value)+1;
+        };
+        addBtn.onclick = () => {
+            const qty = parseInt(qtyInput.value);
+            if(qty > prod.stock){
+                alert(`Only ${prod.stock} in stock!`);
+                return;
+            }
+            addToCart(prod.name, prod.price, qty, prod.image);
+        };
     });
 }
 
