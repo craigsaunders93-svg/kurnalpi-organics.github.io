@@ -1,9 +1,7 @@
 <script>
 const SHIPPING = 150;
+let ORDER_REF = null;
 
-// --------------------
-// INPUT ELEMENTS
-// --------------------
 let inputName, inputPhone, inputEmail, inputAddress, inputNotes;
 
 function initInputs() {
@@ -14,22 +12,15 @@ function initInputs() {
     inputNotes = document.getElementById("notes");
 }
 
-// --------------------
-// ORDER REFERENCE GENERATOR (STEP 1)
-// --------------------
 function generateOrderReference() {
-    const date = new Date();
-    const y = date.getFullYear();
-    const m = String(date.getMonth() + 1).padStart(2, '0');
-    const d = String(date.getDate()).padStart(2, '0');
+    const d = new Date();
+    const y = d.getFullYear();
+    const m = String(d.getMonth() + 1).padStart(2, '0');
+    const day = String(d.getDate()).padStart(2, '0');
     const rand = Math.floor(1000 + Math.random() * 9000);
-
-    return `KPO-${y}${m}${d}-${rand}`;
+    return `KPO-${y}${m}${day}-${rand}`;
 }
 
-// --------------------
-// CART HELPERS
-// --------------------
 function getCart() {
     return JSON.parse(localStorage.getItem("cart")) || [];
 }
@@ -38,15 +29,9 @@ function clearCart() {
     localStorage.removeItem("cart");
 }
 
-// --------------------
-// LOAD CHECKOUT
-// --------------------
-let ORDER_REF = null;
-
 function loadCheckout() {
     initInputs();
     const cart = getCart();
-
     if (cart.length === 0) {
         alert("Your cart is empty.");
         window.location.href = "cart.html";
@@ -55,7 +40,7 @@ function loadCheckout() {
 
     ORDER_REF = generateOrderReference();
     const eftRefInput = document.getElementById("eft-ref");
-    if (eftRefInput) eftRefInput.textContent = ORDER_REF;
+    if (eftRefInput) eftRefInput.value = ORDER_REF;
 
     let subtotal = 0;
     const tbody = document.getElementById("order-items");
@@ -63,109 +48,74 @@ function loadCheckout() {
 
     cart.forEach(item => {
         subtotal += item.price * item.quantity;
-        tbody.innerHTML += `
-            <tr>
-                <td>${item.name}</td>
-                <td>${item.quantity}</td>
-                <td>R${(item.price * item.quantity).toFixed(2)}</td>
-            </tr>
-        `;
+        tbody.innerHTML += `<tr><td>${item.name}</td><td>${item.quantity}</td><td>R${(item.price*item.quantity).toFixed(2)}</td></tr>`;
     });
 
     document.getElementById("subtotal").textContent = "R" + subtotal.toFixed(2);
     document.getElementById("total").textContent = "R" + (subtotal + SHIPPING).toFixed(2);
 }
 
-// --------------------
-// BUILD MESSAGE (STEP 2)
-// --------------------
 function buildMessage(paymentMethod = "Online") {
     const cart = getCart();
-    let msg = `🧾 *New Order*\nReference: ${ORDER_REF}\nPayment Method: ${paymentMethod}\n\n`;
-
-    cart.forEach(item => {
-        msg += `- ${item.name} x ${item.quantity} - R${(item.price * item.quantity).toFixed(2)}\n`;
-    });
-
-    msg += `\nTotal (incl shipping): ${document.getElementById("total").textContent}\n`;
-    msg += `Name: ${inputName.value}\n`;
-    msg += `Phone: ${inputPhone.value}\n`;
-    msg += `Email: ${inputEmail.value}\n`;
-    msg += `Address: ${inputAddress.value}\n`;
-    if (inputNotes.value) msg += `Notes: ${inputNotes.value}\n`;
-
+    let msg = `🧾 NEW ORDER\nReference: ${ORDER_REF}\nPayment Method: ${paymentMethod}\n\n`;
+    cart.forEach(item => msg += `${item.name} x ${item.quantity} - R${(item.price*item.quantity).toFixed(2)}\n`);
+    msg += `\nTotal (incl shipping): ${document.getElementById("total").textContent}\n\n`;
+    msg += `Name: ${inputName.value}\nPhone: ${inputPhone.value}\nEmail: ${inputEmail.value}\nAddress: ${inputAddress.value}\n`;
+    if(inputNotes.value) msg += `Notes: ${inputNotes.value}\n`;
     return msg;
 }
 
-// --------------------
-// COMPLETE ORDER
-// --------------------
 function completeOrder() {
     clearCart();
     document.getElementById("checkout-section").style.display = "none";
     document.getElementById("thank-you").style.display = "block";
 }
 
-// --------------------
-// SEND EMAIL (STEP 4)
-// --------------------
-function sendEmailNotification(message, paymentMethod) {
-    return fetch('http://localhost:5000/send-email', {
-        method: 'POST',
-        headers: { 'Content-Type': 'application/json' },
-        body: JSON.stringify({
-            message,
-            orderRef: ORDER_REF,
-            paymentMethod,
-            toEmail: 'kurnalpiorganics@gmail.com'
-        })
-    })
-    .then(res => {
-        if (!res.ok) throw new Error('Email failed');
-        return res.json();
-    })
-    .then(() => console.log(`📧 Email sent (Ref: ${ORDER_REF})`))
-    .catch(err => console.error('❌ Email error:', err.message));
+async function sendEmailNotification(message, paymentMethod="Online") {
+    try {
+        const response = await fetch("http://localhost:5000/send-email", {
+            method: "POST",
+            headers: { "Content-Type": "application/json" },
+            body: JSON.stringify({ message, orderRef: ORDER_REF, paymentMethod, toEmail: "kurnalpiorganics@gmail.com" })
+        });
+        const data = await response.json();
+        if(!response.ok) throw new Error(data.error || "Unknown server error");
+        console.log(`📧 Email sent (Ref: ${ORDER_REF})`);
+        return true;
+    } catch(err) {
+        console.error("❌ Email error:", err.message);
+        alert("Email could not be sent:\n" + err.message);
+        return false;
+    }
 }
 
-// --------------------
-// CHECKOUT FUNCTIONS (STEP 3)
-// --------------------
 async function checkoutWhatsApp() {
-    const message = buildMessage("WhatsApp");
-    window.open(
-        `https://wa.me/27615136124?text=${encodeURIComponent(message)}`,
-        '_blank'
-    );
-    await sendEmailNotification(message, "WhatsApp");
-    completeOrder();
+    const message = buildMessage();
+    window.open(`https://wa.me/27615136124?text=${encodeURIComponent(message)}`, "_blank");
+    const emailSent = await sendEmailNotification(message);
+    if(emailSent) completeOrder();
 }
 
 async function checkoutEmail() {
-    const message = buildMessage("Email");
-    await sendEmailNotification(message, "Email");
-    completeOrder();
+    const message = buildMessage();
+    const emailSent = await sendEmailNotification(message);
+    if(emailSent) completeOrder();
 }
 
-// --------------------
-// EFT PAYMENT
-// --------------------
 function showEFT() {
     const eftBox = document.getElementById("eft-box");
     const eftRefInput = document.getElementById("eft-ref");
-    if (!ORDER_REF) ORDER_REF = generateOrderReference();
-    if (eftRefInput) eftRefInput.textContent = ORDER_REF;
-
+    if(!ORDER_REF) ORDER_REF = generateOrderReference();
+    if(eftRefInput) eftRefInput.value = ORDER_REF;
     eftBox.style.display = "block";
 }
 
 async function eftConfirm() {
     const message = buildMessage("EFT");
-    await sendEmailNotification(message, "EFT");
-    alert(`Thank you! Please use this reference for your EFT payment:\n\n${ORDER_REF}`);
-    completeOrder();
+    const emailSent = await sendEmailNotification(message, "EFT");
+    if(emailSent) completeOrder();
+    alert("Thank you! Please use this reference for EFT payment:\n" + ORDER_REF);
 }
 
-// --------------------
 document.addEventListener("DOMContentLoaded", loadCheckout);
 </script>
