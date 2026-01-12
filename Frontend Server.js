@@ -87,7 +87,7 @@ function completeOrder() {
 // Send email via backend
 async function sendEmailNotification(message, paymentMethod = "Online") {
     try {
-        const response = await fetch("http://localhost:5000/send-email", {
+        const response = await fetch("https://twaddly-beth-snuffily.ngrok-free.dev/send-email", {
   method: "POST",
   headers: { "Content-Type": "application/json" },
   body: JSON.stringify({
@@ -97,6 +97,7 @@ async function sendEmailNotification(message, paymentMethod = "Online") {
     toEmail: "kurnalpiorganics@gmail.com"
   })
 });
+
 
 
         const data = await response.json();
