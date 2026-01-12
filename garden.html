@@ -194,10 +194,17 @@ function renderProducts() {
         const card = document.createElement("div");
         card.className = "product-card";
 
-        let priceToShow = prod.price || (prod.options ? prod.options[0].price : 0);
-        let stockToShow = prod.stock || (prod.options ? prod.options[0].stock : 0);
+        // Determine default price and stock
+        let defaultPrice, defaultStock;
+        if (prod.options && prod.options.length > 0) {
+            defaultPrice = prod.options[0].price;
+            defaultStock = prod.options[0].stock;
+        } else {
+            defaultPrice = prod.price || 0;
+            defaultStock = prod.stock || 0;
+        }
 
-        // Dropdown for options if available
+        // Create dropdown if options exist
         let optionsHTML = '';
         if (prod.options && prod.options.length > 0) {
             optionsHTML = `
@@ -207,21 +214,23 @@ function renderProducts() {
             `;
         }
 
+        // Build product card
         card.innerHTML = `
             <img src="${prod.image}" alt="${prod.name}">
             <h3>${prod.name}</h3>
             <p>${prod.description}</p>
             ${optionsHTML}
-            <div class="price">R${priceToShow}</div>
-            <div class="stock">Stock: ${stockToShow}</div>
+            <div class="price">R${defaultPrice}</div>
+            <div class="stock">Stock: ${defaultStock}</div>
             <div class="qty-box">
                 <button class="minus">−</button>
-                <input type="number" min="1" max="${stockToShow}" value="1">
+                <input type="number" min="1" max="${defaultStock}" value="1">
                 <button class="plus">+</button>
             </div>
             <button class="add-btn">Add to Cart</button>
         `;
 
+        // Elements
         const qtyInput = card.querySelector("input");
         const minusBtn = card.querySelector(".minus");
         const plusBtn = card.querySelector(".plus");
@@ -230,44 +239,44 @@ function renderProducts() {
         const stockEl = card.querySelector(".stock");
         const sizeSelect = card.querySelector(".size-select");
 
+        let currentPrice = defaultPrice;
+        let currentStock = defaultStock;
+
+        // Quantity buttons
         minusBtn.onclick = () => {
             if (parseInt(qtyInput.value) > 1) qtyInput.value = parseInt(qtyInput.value) - 1;
         };
         plusBtn.onclick = () => {
-            if (parseInt(qtyInput.value) < stockToShow) qtyInput.value = parseInt(qtyInput.value) + 1;
+            if (parseInt(qtyInput.value) < currentStock) qtyInput.value = parseInt(qtyInput.value) + 1;
         };
 
-        // Update price and stock on dropdown change
+        // Update price & stock when size changes
         if (sizeSelect) {
             sizeSelect.onchange = () => {
                 const selected = prod.options[sizeSelect.value];
-                priceEl.textContent = `R${selected.price}`;
-                stockEl.textContent = `Stock: ${selected.stock}`;
-                qtyInput.max = selected.stock;
-                stockToShow = selected.stock;
-                priceToShow = selected.price;
-                if (parseInt(qtyInput.value) > stockToShow) qtyInput.value = stockToShow;
+                currentPrice = selected.price;
+                currentStock = selected.stock;
+                priceEl.textContent = `R${currentPrice}`;
+                stockEl.textContent = `Stock: ${currentStock}`;
+                qtyInput.max = currentStock;
+                if (parseInt(qtyInput.value) > currentStock) qtyInput.value = currentStock;
             };
         }
 
+        // Add to cart
         addBtn.onclick = () => {
-            let finalPrice = priceToShow;
-            let finalStock = stockToShow;
-            let label = prod.name;
-
-            if (sizeSelect) {
-                const selected = prod.options[sizeSelect.value];
-                finalPrice = selected.price;
-                finalStock = selected.stock;
-                label = `${prod.name} (${selected.label})`;
-            }
-
             const qty = parseInt(qtyInput.value);
-            if (qty > finalStock) {
-                alert(`Only ${finalStock} in stock!`);
+            if (qty > currentStock) {
+                alert(`Only ${currentStock} in stock!`);
                 return;
             }
-            addToCart(label, finalPrice, qty, prod.image);
+
+            let label = prod.name;
+            if (sizeSelect) {
+                label += ` (${prod.options[sizeSelect.value].label})`;
+            }
+
+            addToCart(label, currentPrice, qty, prod.image);
         };
 
         container.appendChild(card);
@@ -275,10 +284,9 @@ function renderProducts() {
 }
 
 // ===== INITIALIZE =====
-document.addEventListener("DOMContentLoaded", () => {
-    renderProducts();
-});
+document.addEventListener("DOMContentLoaded", renderProducts);
 </script>
+
 
 
 </body>
