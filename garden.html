@@ -195,18 +195,19 @@ function renderProducts() {
         card.className = "product-card";
 
         // Determine default price and stock
-        let defaultPrice, defaultStock;
+        let defaultPrice, defaultStock, hasOptions = false;
         if (prod.options && prod.options.length > 0) {
             defaultPrice = prod.options[0].price;
             defaultStock = prod.options[0].stock;
+            hasOptions = true;
         } else {
             defaultPrice = prod.price || 0;
             defaultStock = prod.stock || 0;
         }
 
-        // Create dropdown if options exist
+        // Dropdown for products with multiple options
         let optionsHTML = '';
-        if (prod.options && prod.options.length > 0) {
+        if (hasOptions) {
             optionsHTML = `
                 <select class="size-select">
                     ${prod.options.map((opt, i) => `<option value="${i}">${opt.label}</option>`).join('')}
@@ -230,7 +231,6 @@ function renderProducts() {
             <button class="add-btn">Add to Cart</button>
         `;
 
-        // Elements
         const qtyInput = card.querySelector("input");
         const minusBtn = card.querySelector(".minus");
         const plusBtn = card.querySelector(".plus");
@@ -250,7 +250,7 @@ function renderProducts() {
             if (parseInt(qtyInput.value) < currentStock) qtyInput.value = parseInt(qtyInput.value) + 1;
         };
 
-        // Update price & stock when size changes
+        // Update price & stock when dropdown changes
         if (sizeSelect) {
             sizeSelect.onchange = () => {
                 const selected = prod.options[sizeSelect.value];
