@@ -1,185 +1,168 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Seedlings - Kurnalpi Organics</title>
+
+<style>
+* { box-sizing: border-box; margin:0; padding:0; }
+body { font-family: Arial, sans-serif; background: url('background.jpg') center/cover no-repeat fixed; color: white; }
+.page-wrapper { min-height: 100vh; display: flex; flex-direction: column; }
+header.site-header { background-color: rgba(47,93,58,0.85); padding: 15px 30px; display: flex; justify-content: space-between; align-items: center; }
+.logo { height: 100px; width: auto; }
+nav.nav { display: flex; gap: 20px; }
+nav.nav a { color: white; text-decoration: none; font-weight: 600; }
+nav.nav a:hover { opacity: 0.8; }
+
+#products-container { display: grid; grid-template-columns: repeat(auto-fit, minmax(250px,1fr)); gap: 20px; max-width: 1200px; margin: 30px auto; }
+.product-card { background: rgba(47,93,58,0.85); padding: 15px; border-radius: 10px; color: white; text-align: center; box-shadow: 0 6px 12px rgba(0,0,0,0.3); }
+.product-card img { width: 150px; height: 150px; object-fit: contain; margin-bottom: 10px; }
+.price { font-weight: bold; margin: 5px 0; }
+.qty-box { display: flex; justify-content: center; align-items: center; margin: 10px 0; }
+.qty-box input { width: 50px; text-align: center; margin: 0 5px; border-radius: 5px; }
+.qty-box button { padding: 2px 8px; border:none; border-radius: 5px; cursor:pointer; }
+.add-btn { background-color: #2F5D3A; border:none; color:white; padding: 8px 12px; border-radius:5px; cursor:pointer; transition:0.2s; }
+.add-btn:hover { background-color: #1f3b27; }
+
+footer { text-align: center; padding: 15px 0; background-color: rgba(47, 93, 58, 0.85); font-weight: bold; font-size: 14px; }
+footer a { color:white; text-decoration:none; }
+footer a:hover { text-decoration: underline; }
+</style>
+</head>
+<body>
+<div class="page-wrapper">
+
+<header class="site-header">
+    <a href="index.html"><img src="logo.png" class="logo" alt="Kurnalpi Organics"></a>
+    <nav class="nav">
+        <a href="index.html">Home</a>
+        <a href="products.html">Products</a>
+        <a href="cart.html">🛒 <span id="cart-total">R0.00</span></a>
+    </nav>
+</header>
+
+<main>
+    <h1 style="margin-bottom:30px;">Seedlings</h1>
+    <div id="products-container"></div>
+</main>
+
+<footer>
+    &copy; 2026 Kurnalpi Organics
+</footer>
+
 <script>
-/* ========================
-   SEEDLINGS PRODUCTS DATA
-======================== */
+// SEEDLINGS PRODUCTS DATA
 const seedlingsProducts = [
-  {
-    name: "Dragon Fruit",
-    images: ["dragonfruit.png", "dragonfruit1.png"],
-    options: [
-      { label: "15cm cutting", price: 35, stock: 50 },
-      { label: "25cm cutting", price: 55, stock: 50 }
-    ],
-    description: "Healthy organic Dragon Fruit cuttings ready to grow in your garden."
-  },
-  {
-    name: "Basil Seedling",
-    price: 25,
-    images: ["basil-seedling.png"],
-    stock: 20,
-    description: "Fragrant basil seedling perfect for fresh herbs and cooking."
-  },
-  {
-    name: "Lettuce Seedling",
-    price: 30,
-    images: ["lettuce-seedling.png"],
-    stock: 15,
-    description: "Crisp and fresh lettuce seedling to start your salad garden."
-  },
-  {
-    name: "Spinach Seedling",
-    price: 28,
-    images: ["spinach-seedling.png"],
-    stock: 12,
-    description: "Organic spinach seedlings for nutrient-rich leafy greens."
-  }
+  {name:"Dragon Fruit", images:["dragonfruit.png","dragonfruit1.png"], options:[{label:"15cm cutting", price:35, stock:50},{label:"25cm cutting", price:55, stock:50}], description:"Healthy organic Dragon Fruit cuttings ready to grow."},
+  {name:"Basil Seedling", images:["basil-seedling.png"], price:25, stock:20, description:"Fragrant basil seedling perfect for fresh herbs."},
+  {name:"Lettuce Seedling", images:["lettuce-seedling.png"], price:30, stock:15, description:"Crisp and fresh lettuce seedling."},
+  {name:"Spinach Seedling", images:["spinach-seedling.png"], price:28, stock:12, description:"Organic spinach seedlings for leafy greens."}
 ];
 
-/* ========================
-   CART FUNCTIONS (STOCK-AWARE)
-======================== */
-function getCart() {
-  return JSON.parse(localStorage.getItem("cart")) || [];
+// CART FUNCTIONS
+function getCart() { return JSON.parse(localStorage.getItem("cart")) || []; }
+function saveCart(cart){ localStorage.setItem("cart", JSON.stringify(cart)); updateCartTotal(); }
+function updateCartTotal(){ const cart=getCart(); let total=0; cart.forEach(i=>total+=i.price*i.quantity); document.getElementById("cart-total").textContent="R"+total.toFixed(2); }
+function addToCart(name, price, quantity=1, image="", pack="", stock=Infinity){
+    const cart=getCart();
+    const existing = cart.find(i=>i.name===name && i.pack===pack);
+    if(existing){ 
+        if(existing.quantity+quantity>stock){ alert(`Only ${stock} available for "${name}"`); existing.quantity=stock; }
+        else existing.quantity+=quantity;
+    } else cart.push({name, price, quantity:Math.min(quantity,stock), image, pack, stock});
+    saveCart(cart);
 }
 
-function saveCart(cart) {
-  localStorage.setItem("cart", JSON.stringify(cart));
-  updateCartTotal();
+// RENDER PRODUCTS
+function renderProducts(){
+    const container=document.getElementById("products-container");
+    container.innerHTML="";
+    seedlingsProducts.forEach(prod=>{
+        const card=document.createElement("div");
+        card.className="product-card";
+
+        let currentStock=prod.stock || prod.options?.[0].stock || 0;
+        const price=prod.price || prod.options?.[0].price || 0;
+
+        const optionsHTML=prod.options? `<select class="options-select">
+            ${prod.options.map(o=>`<option value="${o.price}" data-stock="${o.stock}">${o.label} - R${o.price}</option>`).join("")}
+        </select>`:"";
+
+        const imageHTML=prod.images.length>1? `<div class="slider">
+            <button class="prev">❮</button>
+            <img class="product-image" src="${prod.images[0]}" data-img-index="0">
+            <button class="next">❯</button>
+        </div>`: `<img src="${prod.images[0]}" class="product-image">`;
+
+        card.innerHTML=`
+            ${imageHTML}
+            <h3>${prod.name}</h3>
+            <p>${prod.description}</p>
+            <div class="price">R${price}</div>
+            ${optionsHTML}
+            <p class="stock">Stock: ${currentStock}</p>
+            <div class="qty-box">
+                <button class="minus">−</button>
+                <input type="number" min="1" value="1">
+                <button class="plus">+</button>
+            </div>
+            <button class="add-btn">Add to Cart</button>
+        `;
+
+        const qtyInput=card.querySelector("input");
+        const priceDiv=card.querySelector(".price");
+        const stockDiv=card.querySelector(".stock");
+        const select=card.querySelector(".options-select");
+        const productImage=card.querySelector(".product-image");
+
+        card.querySelector(".minus").onclick=()=>{if(qtyInput.value>1) qtyInput.value--;}
+        card.querySelector(".plus").onclick=()=>{if(qtyInput.value<currentStock) qtyInput.value++;}
+
+        if(select){
+            select.onchange=()=>{
+                priceDiv.textContent="R"+select.value;
+                currentStock=parseInt(select.options[select.selectedIndex].dataset.stock);
+                stockDiv.textContent="Stock: "+currentStock;
+                if(qtyInput.value>currentStock) qtyInput.value=currentStock;
+            }
+        }
+
+        card.querySelector(".add-btn").onclick=()=>{
+            const qty=parseInt(qtyInput.value);
+            const selectedPrice=select?parseInt(select.value):price;
+            const pack=select?select.options[select.selectedIndex].text:"";
+            const name=pack?`${prod.name} (${pack})`:prod.name;
+            if(qty>currentStock){ alert("Not enough stock available."); return; }
+            addToCart(name, selectedPrice, qty, productImage.src, pack, currentStock);
+            alert(`${qty} x "${name}" added to cart.`);
+        }
+
+        container.appendChild(card);
+    });
 }
 
-function updateCartTotal() {
-  const cart = getCart();
-  let total = 0;
-  cart.forEach(item => total += item.price * item.quantity);
-  document.getElementById("cart-total")?.textContent = "R" + total.toFixed(2);
-}
-
-function addToCart(name, price, quantity = 1, image = "", pack = "", stock = Infinity) {
-  const cart = getCart();
-  const existing = cart.find(item => item.name === name && item.pack === pack);
-  
-  if (existing) {
-    if (existing.quantity + quantity > stock) {
-      alert(`Only ${stock} available for "${name}".`);
-      existing.quantity = stock;
-    } else {
-      existing.quantity += quantity;
-    }
-  } else {
-    cart.push({ name, price, quantity: Math.min(quantity, stock), image, pack, stock });
-  }
-  saveCart(cart);
-}
-
-/* ========================
-   RENDER SEEDLINGS PRODUCTS
-======================== */
-function renderProducts() {
-  const container = document.getElementById("products-container");
-  if (!container) return;
-  container.innerHTML = "";
-
-  seedlingsProducts.forEach(prod => {
-    const card = document.createElement("div");
-    card.className = "product-card";
-
-    const initialPrice = prod.price || prod.options?.[0]?.price || 0;
-    let currentStock = prod.stock || prod.options?.[0]?.stock || 0;
-
-    const optionsHTML = prod.options ? `
-      <select class="options-select">
-        ${prod.options.map(opt =>
-          `<option value="${opt.price}" data-stock="${opt.stock}">${opt.label} - R${opt.price}</option>`
-        ).join("")}
-      </select>` : "";
-
-    const imageHTML = prod.images.length > 1 ? `
-      <div class="slider">
-        <button class="prev">❮</button>
-        <img class="product-image" src="${prod.images[0]}" data-img-index="0">
-        <button class="next">❯</button>
-      </div>` : `<img class="product-image" src="${prod.images[0]}">`;
-
-    card.innerHTML = `
-      ${imageHTML}
-      <h3>${prod.name}</h3>
-      <p>${prod.description}</p>
-      <div class="price">R${initialPrice}</div>
-      ${optionsHTML}
-      <p class="stock">Stock: ${currentStock}</p>
-
-      <div class="qty-box">
-        <button class="minus">−</button>
-        <input type="number" min="1" value="1">
-        <button class="plus">+</button>
-      </div>
-
-      <button class="add-btn">Add to Cart</button>
-    `;
-
-    const qtyInput = card.querySelector("input");
-    const priceDiv = card.querySelector(".price");
-    const stockDiv = card.querySelector(".stock");
-    const select = card.querySelector(".options-select");
-    const productImage = card.querySelector(".product-image");
-
-    /* Quantity buttons */
-    card.querySelector(".minus").onclick = () => { if(qtyInput.value > 1) qtyInput.value--; };
-    card.querySelector(".plus").onclick = () => { if(qtyInput.value < currentStock) qtyInput.value++; };
-
-    /* Options select change */
-    if (select) {
-      select.onchange = () => {
-        priceDiv.textContent = "R" + select.value;
-        currentStock = parseInt(select.options[select.selectedIndex].dataset.stock);
-        stockDiv.textContent = "Stock: " + currentStock;
-        if (qtyInput.value > currentStock) qtyInput.value = currentStock;
-      };
-    }
-
-    /* Add to cart button */
-    card.querySelector(".add-btn").onclick = () => {
-      const qty = parseInt(qtyInput.value);
-      const price = select ? parseInt(select.value) : prod.price;
-      const pack = select ? select.options[select.selectedIndex].text : "";
-      const name = pack ? `${prod.name} (${pack})` : prod.name;
-
-      if(qty > currentStock) { alert("Not enough stock available."); return; }
-
-      addToCart(name, price, qty, productImage.src, pack, currentStock);
-      alert(`${qty} x "${name}" added to cart.`);
-    };
-
-    container.appendChild(card);
-  });
-}
-
-/* ========================
-   IMAGE SLIDER CLICK
-======================== */
-document.addEventListener("click", e => {
-  if(!e.target.classList.contains("prev") && !e.target.classList.contains("next")) return;
-
-  const slider = e.target.closest(".slider");
-  const img = slider.querySelector(".product-image");
-  const card = e.target.closest(".product-card");
-  const productName = card.querySelector("h3").textContent.split(" (")[0];
-  const product = seedlingsProducts.find(p => p.name === productName);
-  let index = parseInt(img.dataset.imgIndex);
-
-  index = e.target.classList.contains("next")
-    ? (index + 1) % product.images.length
-    : (index - 1 + product.images.length) % product.images.length;
-
-  img.src = product.images[index];
-  img.dataset.imgIndex = index;
+// IMAGE SLIDER
+document.addEventListener("click", e=>{
+    if(!e.target.classList.contains("prev") && !e.target.classList.contains("next")) return;
+    const slider=e.target.closest(".slider");
+    const img=slider.querySelector(".product-image");
+    const card=e.target.closest(".product-card");
+    const productName=card.querySelector("h3").textContent.split(" (")[0];
+    const product=seedlingsProducts.find(p=>p.name===productName);
+    let index=parseInt(img.dataset.imgIndex);
+    index=e.target.classList.contains("next")?(index+1)%product.images.length:(index-1+product.images.length)%product.images.length;
+    img.src=product.images[index];
+    img.dataset.imgIndex=index;
 });
 
-/* ========================
-   INIT
-======================== */
-document.addEventListener("DOMContentLoaded", () => {
-  renderProducts();
-  updateCartTotal();
+// INIT
+document.addEventListener("DOMContentLoaded",()=>{
+    renderProducts();
+    updateCartTotal();
 });
 </script>
+
+</div>
+</body>
+</html>
