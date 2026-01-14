@@ -9,6 +9,7 @@
 * { box-sizing: border-box; margin:0; padding:0; }
 body { font-family: Arial, sans-serif; background: url('background.jpg') center/cover no-repeat fixed; color: white; }
 .page-wrapper { min-height: 100vh; display: flex; flex-direction: column; }
+
 header.site-header { background-color: rgba(47,93,58,0.85); padding: 15px 30px; display: flex; justify-content: space-between; align-items: center; }
 .logo { height: 100px; width: auto; }
 nav.nav { display: flex; gap: 20px; }
@@ -28,6 +29,8 @@ nav.nav a:hover { opacity: 0.8; }
 footer { text-align: center; padding: 15px 0; background-color: rgba(47, 93, 58, 0.85); font-weight: bold; font-size: 14px; }
 footer a { color:white; text-decoration:none; }
 footer a:hover { text-decoration: underline; }
+
+h1.section-title { text-align: center; margin-bottom: 30px; }
 </style>
 </head>
 <body>
@@ -43,7 +46,7 @@ footer a:hover { text-decoration: underline; }
 </header>
 
 <main>
-    <h1 style="margin-bottom:30px;">Seedlings</h1>
+    <h1 class="section-title">Seedlings</h1>
     <div id="products-container"></div>
 </main>
 
@@ -55,7 +58,7 @@ footer a:hover { text-decoration: underline; }
 // SEEDLINGS PRODUCTS DATA
 const seedlingsProducts = [
   {name:"Dragon Fruit", images:["dragonfruit.png","dragonfruit1.png"], options:[{label:"15cm cutting", price:35, stock:50},{label:"25cm cutting", price:55, stock:50}], description:"Healthy organic Dragon Fruit cuttings ready to grow."},
-  {name:"Strawberry Seedlings", images:["basil-seedling.png"], price:30, stock:15, description:"Sweet strawberry plant, perfect for a fresh, seasonal treat"},
+  {name:"Strawberry Seedlings", images:["strawberry.png"], price:30, stock:15, description:"Sweet strawberry plant, perfect for a fresh, seasonal treat"},
   {name:"Lettuce Seedling", images:["lettuce-seedling.png"], price:30, stock:15, description:"Crisp and fresh lettuce seedling."},
   {name:"Spinach Seedling", images:["spinach-seedling.png"], price:28, stock:12, description:"Organic spinach seedlings for leafy greens."}
 ];
