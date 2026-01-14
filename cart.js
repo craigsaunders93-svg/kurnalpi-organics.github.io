@@ -1,5 +1,5 @@
 // ========================
-// CART.JS – STOCK-AWARE (SAFE VERSION)
+// CART.JS – STOCK-AWARE MODERN VERSION
 // ========================
 
 // ---------- GET / SAVE CART ----------
@@ -23,8 +23,7 @@ function updateCartDisplay() {
     total += price * qty;
   });
 
-  const el = document.getElementById("cart-total");
-  if (el) el.textContent = "R" + total.toFixed(2);
+  document.getElementById("cart-total")?.textContent = "R" + total.toFixed(2);
 }
 
 // ---------- ADD TO CART ----------
@@ -39,16 +38,14 @@ function addToCart(
   if (!name || isNaN(price) || price < 0 || quantity < 1) return;
 
   let cart = getCart();
-
-  const existing = cart.find(
-    item => item.name === name && item.pack === pack
-  );
+  const existing = cart.find(item => item.name === name && item.pack === pack);
 
   if (existing) {
-    existing.quantity = Math.min(existing.quantity + quantity, stock);
     if (existing.quantity >= stock) {
       alert(`Only ${stock} available for "${name}".`);
+      return;
     }
+    existing.quantity = Math.min(existing.quantity + quantity, stock);
   } else {
     cart.push({
       name,
@@ -78,13 +75,13 @@ function renderCartPage() {
   let total = 0;
 
   if (cart.length === 0) {
-    if (messageEl) messageEl.textContent = "Your cart is currently empty.";
+    messageEl && (messageEl.textContent = "Your cart is currently empty.");
     totalEl.textContent = "Total: R0.00";
     updateCartDisplay();
     return;
   }
 
-  if (messageEl) messageEl.textContent = "";
+  messageEl && (messageEl.textContent = "");
 
   cart.forEach((item, index) => {
     const subtotal = item.price * item.quantity;
@@ -93,15 +90,15 @@ function renderCartPage() {
     const row = document.createElement("tr");
     row.innerHTML = `
       <td>
-        <img src="${item.image || 'placeholder.png'}" width="80">
+        <img src="${item.image ?? 'placeholder.png'}" width="80">
         <div>${item.name}</div>
       </td>
       <td>${item.pack || "-"}</td>
       <td>R${item.price.toFixed(2)}</td>
       <td>
         <button class="qty-btn minus" data-index="${index}" ${item.quantity <= 1 ? "disabled" : ""}>−</button>
-        <input class="qty-input" type="number" min="1" value="${item.quantity}" data-index="${index}">
-        <button class="qty-btn plus" data-index="${index}">+</button>
+        <input class="qty-input" type="number" min="1" value="${item.quantity}" data-index="${index}" max="${item.stock ?? ''}">
+        <button class="qty-btn plus" data-index="${index}" ${item.quantity >= item.stock ? "disabled" : ""}>+</button>
       </td>
       <td>R${subtotal.toFixed(2)}</td>
       <td>
@@ -122,17 +119,19 @@ function renderCartPage() {
 function attachCartActions() {
   const cart = getCart();
 
+  // Quantity buttons
   document.querySelectorAll(".qty-btn").forEach(btn => {
     btn.onclick = () => {
       const i = parseInt(btn.dataset.index);
-      const stock = cart[i].stock ?? Infinity;
+      const item = cart[i];
+      const stock = item.stock ?? Infinity;
 
-      if (btn.classList.contains("minus") && cart[i].quantity > 1) {
-        cart[i].quantity--;
+      if (btn.classList.contains("minus") && item.quantity > 1) {
+        item.quantity--;
       }
 
-      if (btn.classList.contains("plus") && cart[i].quantity < stock) {
-        cart[i].quantity++;
+      if (btn.classList.contains("plus") && item.quantity < stock) {
+        item.quantity++;
       }
 
       saveCart(cart);
@@ -140,24 +139,27 @@ function attachCartActions() {
     };
   });
 
+  // Quantity inputs
   document.querySelectorAll(".qty-input").forEach(input => {
     input.onchange = () => {
       const i = parseInt(input.dataset.index);
-      let qty = parseInt(input.value);
-      const stock = cart[i].stock ?? Infinity;
+      const item = cart[i];
+      const stock = item.stock ?? Infinity;
 
+      let qty = parseInt(input.value);
       if (!qty || qty < 1) qty = 1;
       if (qty > stock) {
-        alert(`Only ${stock} available for "${cart[i].name}".`);
+        alert(`Only ${stock} available for "${item.name}".`);
         qty = stock;
       }
 
-      cart[i].quantity = qty;
+      item.quantity = qty;
       saveCart(cart);
       renderCartPage();
     };
   });
 
+  // Remove buttons
   document.querySelectorAll(".remove-btn").forEach(btn => {
     btn.onclick = () => {
       const i = parseInt(btn.dataset.index);
@@ -169,11 +171,9 @@ function attachCartActions() {
 }
 
 // ========================
-// INIT (SAFE)
+// INIT
 // ========================
 document.addEventListener("DOMContentLoaded", () => {
   updateCartDisplay();
-  if (document.getElementById("cart-items")) {
-    renderCartPage();
-  }
+  document.getElementById("cart-items") && renderCartPage();
 });
