@@ -199,13 +199,21 @@ function renderProducts() {
         const plusBtn = card.querySelector(".plus");
         const addBtn = card.querySelector(".add-btn");
 
-        // Variant image switching
+        // Image toggle button
+if (prod.images) {
+    const variantBtn = card.querySelector(".variant-btn");
+    let currentIndex = 0;
+
+    variantBtn.onclick = () => {
+        currentIndex = (currentIndex + 1) % prod.images.length;
+        img.src = prod.images[currentIndex];
+
         if (prod.variants) {
-            const variantSelect = card.querySelector(".variant-select");
-            variantSelect.onchange = () => {
-                img.src = prod.images[variantSelect.value];
-            };
+            variantBtn.textContent = `View ${prod.variants[(currentIndex + 1) % prod.variants.length]}`;
         }
+    };
+}
+
 
         minusBtn.onclick = () => {
             if (qtyInput.value > 1) qtyInput.value--;
