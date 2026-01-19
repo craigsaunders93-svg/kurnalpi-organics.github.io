@@ -73,7 +73,7 @@ footer { text-align: center; padding: 15px 0; background-color: rgba(47, 93, 58,
 
 <script>
 // =====================
-// GARDEN PRODUCTS DATA WITH STOCK
+// PRODUCTS DATA
 // =====================
 const products = [
     {
@@ -169,18 +169,37 @@ function renderProducts() {
         const card = document.createElement("div");
         card.className = "product-card";
 
-        const mainImage = prod.image || (prod.images ? prod.images[0] : "");
         let currentIndex = 0;
+        const mainImage = prod.image || (prod.images ? prod.images[0] : "");
 
         card.innerHTML = `
-            <img src="${mainImage}" alt="${prod.name}" class="product-img">
+            <div style="position:relative;">
+                <img src="${mainImage}" class="product-img">
+
+                ${prod.images ? `
+                    <button class="img-arrow" style="
+                        position:absolute;
+                        right:-10px;
+                        top:50%;
+                        transform:translateY(-50%);
+                        background:#1f4d30;
+                        color:#fff;
+                        border:none;
+                        border-radius:50%;
+                        width:28px;
+                        height:28px;
+                        cursor:pointer;
+                    ">›</button>
+                ` : ""}
+            </div>
+
             <h3>${prod.name}</h3>
             <p>${prod.desc}</p>
 
-            ${prod.images ? `
-                <button class="variant-btn">
-                    View ${prod.variants ? prod.variants[1] : "Alternate"}
-                </button>
+            ${prod.variants ? `
+                <select class="variant-select">
+                    ${prod.variants.map((v,i)=>`<option value="${i}">${v}</option>`).join("")}
+                </select>
             ` : ""}
 
             <div class="price">R${prod.price}</div>
@@ -201,22 +220,27 @@ function renderProducts() {
         const plusBtn = card.querySelector(".plus");
         const addBtn = card.querySelector(".add-btn");
 
-        // IMAGE TOGGLE (for Contour)
-        if (prod.images) {
-            const variantBtn = card.querySelector(".variant-btn");
+        const variantSelect = card.querySelector(".variant-select");
+        const arrowBtn = card.querySelector(".img-arrow");
 
-            variantBtn.onclick = () => {
-                currentIndex = (currentIndex + 1) % prod.images.length;
+        // SYNC IMAGE FROM DROPDOWN
+        if (variantSelect) {
+            variantSelect.onchange = () => {
+                currentIndex = parseInt(variantSelect.value);
                 img.src = prod.images[currentIndex];
-
-                if (prod.variants) {
-                    variantBtn.textContent =
-                        `View ${prod.variants[(currentIndex + 1) % prod.variants.length]}`;
-                }
             };
         }
 
-        // QUANTITY CONTROLS
+        // SYNC DROPDOWN FROM ARROW
+        if (arrowBtn) {
+            arrowBtn.onclick = () => {
+                currentIndex = (currentIndex + 1) % prod.images.length;
+                img.src = prod.images[currentIndex];
+                variantSelect.value = currentIndex;
+            };
+        }
+
+        // QUANTITY
         minusBtn.onclick = () => {
             if (qtyInput.value > 1) qtyInput.value--;
         };
@@ -228,8 +252,9 @@ function renderProducts() {
         // ADD TO CART
         addBtn.onclick = () => {
             const qty = parseInt(qtyInput.value);
+
             if (qty > prod.stock) {
-                alert(`Only ${prod.stock} in stock!`);
+                alert(`Only ${prod.stock} in stock`);
                 return;
             }
 
