@@ -151,6 +151,7 @@ const products = [
 ];
 
 // ===== RENDER PRODUCTS WITH STOCK =====
+<script>
 function renderProducts() {
     const container = document.getElementById("products-container");
     if (!container) return;
@@ -161,34 +162,71 @@ function renderProducts() {
         const card = document.createElement("div");
         card.className = "product-card";
 
+        // Handle image logic
+        const mainImage = prod.image || (prod.images ? prod.images[0] : "");
+
         card.innerHTML = `
-            <img src="${prod.image}" alt="${prod.name}">
+            <img src="${mainImage}" alt="${prod.name}" class="product-img">
             <h3>${prod.name}</h3>
             <p>${prod.desc}</p>
+
+            ${prod.variants ? `
+                <select class="variant-select">
+                    ${prod.variants.map((v, i) => `<option value="${i}">${v}</option>`).join("")}
+                </select>
+            ` : ""}
+
             <div class="price">R${prod.price}</div>
             <div class="stock">Stock: ${prod.stock}</div>
+
             <div class="qty-box">
                 <button class="minus">−</button>
                 <input type="number" min="1" max="${prod.stock}" value="1">
                 <button class="plus">+</button>
             </div>
+
             <button class="add-btn">Add to Cart</button>
         `;
 
+        const img = card.querySelector(".product-img");
         const qtyInput = card.querySelector("input");
         const minusBtn = card.querySelector(".minus");
         const plusBtn = card.querySelector(".plus");
         const addBtn = card.querySelector(".add-btn");
 
-        minusBtn.onclick = () => { if(parseInt(qtyInput.value) > 1) qtyInput.value = parseInt(qtyInput.value) - 1; };
-        plusBtn.onclick = () => { if(parseInt(qtyInput.value) < prod.stock) qtyInput.value = parseInt(qtyInput.value) + 1; };
+        // Variant image switching
+        if (prod.variants) {
+            const variantSelect = card.querySelector(".variant-select");
+            variantSelect.onchange = () => {
+                img.src = prod.images[variantSelect.value];
+            };
+        }
+
+        minusBtn.onclick = () => {
+            if (qtyInput.value > 1) qtyInput.value--;
+        };
+
+        plusBtn.onclick = () => {
+            if (qtyInput.value < prod.stock) qtyInput.value++;
+        };
+
         addBtn.onclick = () => {
             const qty = parseInt(qtyInput.value);
-            if(qty > prod.stock){
+            if (qty > prod.stock) {
                 alert(`Only ${prod.stock} in stock!`);
                 return;
             }
-            addToCart(prod.name, prod.price, qty, prod.image);
+
+            const variantText = prod.variants
+                ? ` (${card.querySelector(".variant-select").selectedOptions[0].text})`
+                : "";
+
+            addToCart(
+                prod.name + variantText,
+                prod.price,
+                qty,
+                img.src
+            );
         };
 
         container.appendChild(card);
@@ -197,6 +235,3 @@ function renderProducts() {
 
 document.addEventListener("DOMContentLoaded", renderProducts);
 </script>
-
-</body>
-</html>
