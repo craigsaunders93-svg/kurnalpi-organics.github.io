@@ -134,10 +134,12 @@ const products = [
     },
     {
         name: "Contour",
-        price: 50,
         stock: 10,
         images: ["contour.png", "contour1.png"],
-        variants: ["Circle", "Square"],
+        variants: [
+            { name: "Circle", price: 50 },
+            { name: "Square", price: 55 }
+        ],
         desc: "Carved by time, held in stone.<br>Width: 125mm"
     },
     {
@@ -161,8 +163,6 @@ const products = [
 // =====================
 function renderProducts() {
     const container = document.getElementById("products-container");
-    if (!container) return;
-
     container.innerHTML = "";
 
     products.forEach(prod => {
@@ -172,24 +172,15 @@ function renderProducts() {
         let currentIndex = 0;
         const mainImage = prod.image || (prod.images ? prod.images[0] : "");
 
+        const basePrice = prod.price || (prod.variants ? prod.variants[0].price : 0);
+
         card.innerHTML = `
             <div style="position:relative;">
                 <img src="${mainImage}" class="product-img">
 
                 ${prod.images ? `
-                    <button class="img-arrow" style="
-                        position:absolute;
-                        right:-10px;
-                        top:50%;
-                        transform:translateY(-50%);
-                        background:#1f4d30;
-                        color:#fff;
-                        border:none;
-                        border-radius:50%;
-                        width:28px;
-                        height:28px;
-                        cursor:pointer;
-                    ">›</button>
+                    <button class="img-arrow left">‹</button>
+                    <button class="img-arrow right">›</button>
                 ` : ""}
             </div>
 
@@ -198,11 +189,13 @@ function renderProducts() {
 
             ${prod.variants ? `
                 <select class="variant-select">
-                    ${prod.variants.map((v,i)=>`<option value="${i}">${v}</option>`).join("")}
+                    ${prod.variants.map(
+                        (v,i)=>`<option value="${i}">${v.name} – R${v.price}</option>`
+                    ).join("")}
                 </select>
             ` : ""}
 
-            <div class="price">R${prod.price}</div>
+            <div class="price">R<span class="price-value">${basePrice}</span></div>
             <div class="stock">Stock: ${prod.stock}</div>
 
             <div class="qty-box">
@@ -215,56 +208,51 @@ function renderProducts() {
         `;
 
         const img = card.querySelector(".product-img");
-        const qtyInput = card.querySelector("input");
-        const minusBtn = card.querySelector(".minus");
-        const plusBtn = card.querySelector(".plus");
-        const addBtn = card.querySelector(".add-btn");
-
+        const priceValue = card.querySelector(".price-value");
         const variantSelect = card.querySelector(".variant-select");
-        const arrowBtn = card.querySelector(".img-arrow");
+        const leftArrow = card.querySelector(".img-arrow.left");
+        const rightArrow = card.querySelector(".img-arrow.right");
 
-        // SYNC IMAGE FROM DROPDOWN
+        // UPDATE VARIANT
+        function updateVariant(index) {
+            currentIndex = index;
+            img.src = prod.images[currentIndex];
+            variantSelect.value = currentIndex;
+            priceValue.textContent = prod.variants[currentIndex].price;
+        }
+
+        // DROPDOWN CHANGE
         if (variantSelect) {
             variantSelect.onchange = () => {
-                currentIndex = parseInt(variantSelect.value);
-                img.src = prod.images[currentIndex];
+                updateVariant(parseInt(variantSelect.value));
             };
         }
 
-        // SYNC DROPDOWN FROM ARROW
-        if (arrowBtn) {
-            arrowBtn.onclick = () => {
-                currentIndex = (currentIndex + 1) % prod.images.length;
-                img.src = prod.images[currentIndex];
-                variantSelect.value = currentIndex;
+        // LEFT ARROW
+        if (leftArrow) {
+            leftArrow.onclick = () => {
+                const next = (currentIndex - 1 + prod.images.length) % prod.images.length;
+                updateVariant(next);
             };
         }
 
-        // QUANTITY
-        minusBtn.onclick = () => {
-            if (qtyInput.value > 1) qtyInput.value--;
-        };
-
-        plusBtn.onclick = () => {
-            if (qtyInput.value < prod.stock) qtyInput.value++;
-        };
+        // RIGHT ARROW
+        if (rightArrow) {
+            rightArrow.onclick = () => {
+                const next = (currentIndex + 1) % prod.images.length;
+                updateVariant(next);
+            };
+        }
 
         // ADD TO CART
-        addBtn.onclick = () => {
-            const qty = parseInt(qtyInput.value);
-
-            if (qty > prod.stock) {
-                alert(`Only ${prod.stock} in stock`);
-                return;
-            }
-
-            const variantText = prod.variants
-                ? ` (${prod.variants[currentIndex]})`
-                : "";
+        card.querySelector(".add-btn").onclick = () => {
+            const qty = parseInt(card.querySelector("input").value);
+            const variantText = prod.variants ? ` (${prod.variants[currentIndex].name})` : "";
+            const price = prod.variants ? prod.variants[currentIndex].price : prod.price;
 
             addToCart(
                 prod.name + variantText,
-                prod.price,
+                price,
                 qty,
                 img.src
             );
