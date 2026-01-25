@@ -209,24 +209,23 @@ function renderProducts() {
     const card = document.createElement("div");
     card.className = "product-card";
 
-    // Determine base price and stock
     let currentStock = prod.stock || prod.options?.[0]?.stock || 0;
     const basePrice = prod.price || prod.options?.[0]?.price || 0;
 
-    // Options dropdown HTML
+    // Options dropdown
     const optionsHTML = prod.options ? `
       <select class="options-select">
         ${prod.options.map(o => `<option value="${o.price}" data-stock="${o.stock}">${o.label} - R${o.price}</option>`).join("")}
       </select>` : "";
 
-    // Image HTML with slider if multiple images
+    // Image slider or single image
     const imageHTML = prod.images.length > 1 ? `
       <div class="slider">
         <button class="prev">❮</button>
-        <img class="product-image" src="${prod.images[0]}" data-img-index="0">
+        <img class="product-image zoom-img" src="${prod.images[0]}" data-img-index="0">
         <button class="next">❯</button>
       </div>` :
-      `<img class="product-image" src="${prod.images[0]}">`;
+      `<img class="product-image zoom-img" src="${prod.images[0]}">`;
 
     card.innerHTML = `
       ${imageHTML}
@@ -250,33 +249,32 @@ function renderProducts() {
     const priceDiv = card.querySelector(".price");
     const stockDiv = card.querySelector(".stock");
     const select = card.querySelector(".options-select");
-    const productImage = card.querySelector(".product-image");
+    const productImage = card.querySelector(".zoom-img");
 
     // Quantity buttons
     card.querySelector(".minus").onclick = () => { if(qtyInput.value > 1) qtyInput.value--; };
     card.querySelector(".plus").onclick = () => { if(qtyInput.value < currentStock) qtyInput.value++; };
 
-    // Handle options change
-    if (select) {
+    // Option change
+    if(select) {
       select.onchange = () => {
         priceDiv.textContent = "R" + select.value;
         currentStock = parseInt(select.options[select.selectedIndex].dataset.stock);
         stockDiv.textContent = "Stock: " + currentStock;
-        if (qtyInput.value > currentStock) qtyInput.value = currentStock;
+        if(qtyInput.value > currentStock) qtyInput.value = currentStock;
       };
     }
 
     // Add to cart
     card.querySelector(".add-btn").onclick = () => {
       const qty = parseInt(qtyInput.value);
-      const price = select ? parseInt(select.value) : basePrice;
-      const pack = select ? select.options[select.selectedIndex].text : "";
-      const name = pack ? `${prod.name} (${pack})` : prod.name;
-
-      if (qty > currentStock) {
+      if(qty > currentStock) {
         alert("Not enough stock available.");
         return;
       }
+      const price = select ? parseInt(select.value) : basePrice;
+      const pack = select ? select.options[select.selectedIndex].text : "";
+      const name = pack ? `${prod.name} (${pack})` : prod.name;
 
       addToCart(name, price, qty, productImage.src, pack, currentStock);
       alert(`${qty} x "${name}" added to cart.`);
@@ -290,22 +288,51 @@ function renderProducts() {
 // IMAGE SLIDER FUNCTIONALITY
 // ========================
 document.addEventListener("click", e => {
-  if (!e.target.classList.contains("prev") && !e.target.classList.contains("next")) return;
+  if (e.target.classList.contains("prev") || e.target.classList.contains("next")) {
+    const slider = e.target.closest(".slider");
+    const img = slider.querySelector(".product-image");
+    const card = e.target.closest(".product-card");
+    const productName = card.querySelector("h3").textContent.split(" (")[0];
+    const product = seedlingsProducts.find(p => p.name === productName);
 
-  const slider = e.target.closest(".slider");
-  const img = slider.querySelector(".product-image");
-  const card = e.target.closest(".product-card");
-  const productName = card.querySelector("h3").textContent.split(" (")[0];
-  const product = seedlingsProducts.find(p => p.name === productName);
+    let index = parseInt(img.dataset.imgIndex);
+    index = e.target.classList.contains("next")
+      ? (index + 1) % product.images.length
+      : (index - 1 + product.images.length) % product.images.length;
 
-  let index = parseInt(img.dataset.imgIndex);
-  index = e.target.classList.contains("next")
-    ? (index + 1) % product.images.length
-    : (index - 1 + product.images.length) % product.images.length;
-
-  img.src = product.images[index];
-  img.dataset.imgIndex = index;
+    img.src = product.images[index];
+    img.dataset.imgIndex = index;
+  }
 });
+
+// ========================
+// IMAGE ZOOM MODAL
+// ========================
+function setupImageZoom() {
+  const modalHTML = document.createElement("div");
+  modalHTML.id = "image-modal";
+  modalHTML.style.cssText = `
+    display:none; position:fixed; inset:0;
+    background: rgba(0,0,0,0.8);
+    justify-content:center; align-items:center;
+    z-index:9999; cursor:pointer;
+  `;
+  modalHTML.innerHTML = `<img id="modal-image" style="max-width:90%; max-height:90%; border-radius:12px;">`;
+  document.body.appendChild(modalHTML);
+
+  document.addEventListener("click", e => {
+    const modal = document.getElementById("image-modal");
+    const modalImg = document.getElementById("modal-image");
+
+    if(e.target.matches(".zoom-img")) {
+      modal.style.display = "flex";
+      modalImg.src = e.target.src;
+    } else if(e.target === modal || e.target === modalImg) {
+      modal.style.display = "none";
+      modalImg.src = "";
+    }
+  });
+}
 
 // ========================
 // INIT
@@ -313,9 +340,6 @@ document.addEventListener("click", e => {
 document.addEventListener("DOMContentLoaded", () => {
   renderProducts();
   updateCartTotal();
+  setupImageZoom();
 });
 </script>
-
-</div>
-</body>
-</html>
