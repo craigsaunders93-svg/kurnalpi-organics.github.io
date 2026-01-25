@@ -170,11 +170,38 @@ const soapProducts = [
     { name: "Rosemary & Mint Soap", price: 65, stock: 9, image: "rose.png", description: "Invigorating herbal soap with rosemary and mint for a refreshing, cooling cleanse." }
 ];
 
+// ===== CART FUNCTIONS =====
+function getCart() {
+    return JSON.parse(localStorage.getItem("cart")) || [];
+}
+
+function saveCart(cart) {
+    localStorage.setItem("cart", JSON.stringify(cart));
+    updateCartTotal();
+}
+
+function updateCartTotal() {
+    const cart = getCart();
+    let total = 0;
+    cart.forEach(i => total += i.price * i.quantity);
+    const el = document.getElementById("cart-total");
+    if (el) el.textContent = "R" + total.toFixed(2);
+}
+
+function addToCart(name, price, quantity = 1, image = "") {
+    const cart = getCart();
+    const existing = cart.find(i => i.name === name);
+    if (existing) {
+        existing.quantity += quantity;
+    } else {
+        cart.push({ name, price, quantity, image });
+    }
+    saveCart(cart);
+}
+
 // ===== RENDER PRODUCTS =====
 function renderProducts() {
     const container = document.getElementById("products-container");
-    if (!container) return;
-
     container.innerHTML = "";
 
     soapProducts.forEach(prod => {
@@ -182,7 +209,7 @@ function renderProducts() {
         card.className = "product-card";
 
         card.innerHTML = `
-            <img src="${prod.image}" alt="${prod.name}">
+            <img class="popup-img" src="${prod.image}" alt="${prod.name}">
             <h3>${prod.name}</h3>
             <p>${prod.description}</p>
             <div class="price">R${prod.price}</div>
@@ -197,12 +224,13 @@ function renderProducts() {
 
         const qtyInput = card.querySelector("input");
         const stockDiv = card.querySelector(".stock");
+        const img = card.querySelector(".popup-img");
 
+        // Quantity buttons
         card.querySelector(".minus").onclick = () => { if(qtyInput.value > 1) qtyInput.value--; };
-        card.querySelector(".plus").onclick = () => { 
-            if (qtyInput.value < prod.stock) qtyInput.value++;
-        };
+        card.querySelector(".plus").onclick = () => { if(qtyInput.value < prod.stock) qtyInput.value++; };
 
+        // Add to cart
         card.querySelector(".add-btn").onclick = () => { 
             const qty = parseInt(qtyInput.value);
             if(qty > prod.stock){
@@ -210,14 +238,44 @@ function renderProducts() {
                 return;
             }
             addToCart(prod.name, prod.price, qty, prod.image);
+            alert(`${qty} x "${prod.name}" added to cart.`);
         };
 
         container.appendChild(card);
     });
 }
 
-document.addEventListener("DOMContentLoaded", renderProducts);
-</script>
+// ===== IMAGE POPUP =====
+function setupImagePopup() {
+    const modalHTML = document.createElement("div");
+    modalHTML.id = "image-modal";
+    modalHTML.style.cssText = `
+        display:none; position:fixed; inset:0;
+        background: rgba(0,0,0,0.85);
+        justify-content:center; align-items:center;
+        z-index:9999; cursor:pointer;
+    `;
+    modalHTML.innerHTML = `<img id="modal-image" style="max-width:90%; max-height:90%; border-radius:12px;">`;
+    document.body.appendChild(modalHTML);
 
-</body>
-</html>
+    document.addEventListener("click", e => {
+        const modal = document.getElementById("image-modal");
+        const modalImg = document.getElementById("modal-image");
+
+        if(e.target.matches(".popup-img")) {
+            modal.style.display = "flex";
+            modalImg.src = e.target.src;
+        } else if(e.target === modal || e.target === modalImg) {
+            modal.style.display = "none";
+            modalImg.src = "";
+        }
+    });
+}
+
+// ===== INIT =====
+document.addEventListener("DOMContentLoaded", () => {
+    renderProducts();
+    updateCartTotal();
+    setupImagePopup();
+});
+</script>
