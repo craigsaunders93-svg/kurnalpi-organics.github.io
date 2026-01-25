@@ -154,7 +154,9 @@ footer {
 
 <main>
     <h1 style="text-align:center;">Garden</h1>
-    <p style="text-align:center;">Organic fertilizers, tools, and gardening essentials to grow your green space naturally.</p>
+    <p style="text-align:center;">
+        Organic fertilizers, tools, and gardening essentials to grow your green space naturally.
+    </p>
 
     <div class="products-container" id="products-container"></div>
 </main>
@@ -165,11 +167,11 @@ footer {
 
 </div>
 
-<script src="cart.js"><
+<!-- CART LOGIC -->
+<script src="cart.js"></script>
 
 <script>
-
-// ======= PRODUCTS =======
+/* ======= PRODUCTS ======= */
 const gardenProducts = [
   {
     name: "Envirozyme Fertilizer",
@@ -181,7 +183,6 @@ const gardenProducts = [
     ],
     description: "Nutrient-rich organic fertilizer that promotes healthy micro organisms in plant growth and vibrant blooms."
   },
-
   {
     name: "Garden Tools Set",
     price: 250,
@@ -189,7 +190,6 @@ const gardenProducts = [
     image: "tools.jpg",
     description: "Complete set of durable garden tools for planting, pruning, and general garden maintenance."
   },
-
   {
     name: "Garden Pruning Shears",
     price: 145,
@@ -197,7 +197,6 @@ const gardenProducts = [
     image: "prune.png",
     description: "Sharp, durable pruning shears designed for clean cuts on stems, branches, and shrubs. Comfortable grip for everyday garden maintenance and precise trimming."
   },
-
   {
     name: "Garden Precision Shears",
     price: 150,
@@ -207,37 +206,38 @@ const gardenProducts = [
   }
 ];
 
-// ===== RENDER PRODUCTS =====
+/* ===== RENDER PRODUCTS ===== */
 function renderProducts() {
     const container = document.getElementById("products-container");
-    if (!container) return;
-
     container.innerHTML = "";
 
     gardenProducts.forEach(prod => {
         const card = document.createElement("div");
         card.className = "product-card";
 
-        // Determine initial price and stock
-        let initialPrice = prod.price || (prod.options ? prod.options[0].price : 0);
-        let initialStock = prod.stock || (prod.options ? prod.options[0].stock : 0);
+        let currentPrice = prod.price || prod.options[0].price;
+        let currentStock = prod.stock || prod.options[0].stock;
 
-        // Dropdown for options with price displayed
         let optionsHTML = "";
-        if(prod.options) {
-            optionsHTML = `<select class="options-select">
-                ${prod.options.map(opt => `<option value="${opt.price}" data-stock="${opt.stock}">${opt.label} - R${opt.price}</option>`).join("")}
-            </select>`;
-            initialStock = prod.options[0].stock;
+        if (prod.options) {
+            optionsHTML = `
+                <select class="options-select">
+                    ${prod.options.map(opt =>
+                        `<option value="${opt.price}" data-stock="${opt.stock}">
+                            ${opt.label} - R${opt.price}
+                        </option>`
+                    ).join("")}
+                </select>
+            `;
         }
 
         card.innerHTML = `
             <img src="${prod.image}" alt="${prod.name}">
             <h3>${prod.name}</h3>
             <p>${prod.description}</p>
-            <div class="price">R${initialPrice}</div>
+            <div class="price">R${currentPrice}</div>
             ${optionsHTML}
-            <p class="stock">Stock: ${initialStock}</p>
+            <p class="stock">Stock: ${currentStock}</p>
             <div class="qty-box">
                 <button class="minus">−</button>
                 <input type="number" min="1" value="1">
@@ -246,54 +246,44 @@ function renderProducts() {
             <button class="add-btn">Add to Cart</button>
         `;
 
-        const qtyInput = card.querySelector("input");
+        const qty = card.querySelector("input");
         const priceDiv = card.querySelector(".price");
         const stockDiv = card.querySelector(".stock");
         const select = card.querySelector(".options-select");
 
-        let currentStock = initialStock;
-
-        // Quantity buttons
-        card.querySelector(".minus").onclick = () => { 
-            if(qtyInput.value > 1) qtyInput.value--; 
-        };
-        card.querySelector(".plus").onclick = () => { 
-            if(qtyInput.value < currentStock) qtyInput.value++; 
+        card.querySelector(".minus").onclick = () => {
+            if (qty.value > 1) qty.value--;
         };
 
-        // Update price & stock when dropdown changes
-        if(select) {
+        card.querySelector(".plus").onclick = () => {
+            if (qty.value < currentStock) qty.value++;
+        };
+
+        if (select) {
             select.onchange = () => {
-                const selectedPrice = parseInt(select.value);
-                const selectedStock = parseInt(select.options[select.selectedIndex].dataset.stock);
-                priceDiv.textContent = "R" + selectedPrice;
-                currentStock = selectedStock;
+                currentPrice = parseInt(select.value);
+                currentStock = parseInt(select.selectedOptions[0].dataset.stock);
+                priceDiv.textContent = "R" + currentPrice;
                 stockDiv.textContent = "Stock: " + currentStock;
-                qtyInput.max = currentStock;
-                if (qtyInput.value > currentStock) qtyInput.value = currentStock;
+                qty.value = 1;
             };
         }
 
-        // Add to cart
         card.querySelector(".add-btn").onclick = () => {
-            const qty = parseInt(qtyInput.value);
-            if(qty > currentStock) {
-                alert("Not enough stock available.");
-                return;
-            }
-            const price = select ? parseInt(select.value) : prod.price;
-            const name = select ? `${prod.name} (${select.options[select.selectedIndex].text})` : prod.name;
-            addToCart(name, price, qty, prod.image);
+            addToCart(
+                prod.name,
+                currentPrice,
+                parseInt(qty.value),
+                prod.image
+            );
         };
 
         container.appendChild(card);
     });
 }
 
-// ===== INITIALIZE =====
 document.addEventListener("DOMContentLoaded", renderProducts);
 </script>
-
 
 </body>
 </html>
