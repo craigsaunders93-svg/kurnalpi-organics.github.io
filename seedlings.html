@@ -222,10 +222,10 @@ function renderProducts() {
     const imageHTML = prod.images.length > 1 ? `
       <div class="slider">
         <button class="prev">❮</button>
-        <img class="product-image zoom-img" src="${prod.images[0]}" data-img-index="0">
+        <img class="product-image popup-img" src="${prod.images[0]}" data-img-index="0">
         <button class="next">❯</button>
       </div>` :
-      `<img class="product-image zoom-img" src="${prod.images[0]}">`;
+      `<img class="product-image popup-img" src="${prod.images[0]}">`;
 
     card.innerHTML = `
       ${imageHTML}
@@ -249,7 +249,7 @@ function renderProducts() {
     const priceDiv = card.querySelector(".price");
     const stockDiv = card.querySelector(".stock");
     const select = card.querySelector(".options-select");
-    const productImage = card.querySelector(".zoom-img");
+    const productImage = card.querySelector(".popup-img");
 
     // Quantity buttons
     card.querySelector(".minus").onclick = () => { if(qtyInput.value > 1) qtyInput.value--; };
@@ -306,14 +306,14 @@ document.addEventListener("click", e => {
 });
 
 // ========================
-// IMAGE ZOOM MODAL
+// IMAGE POPUP ON CLICK
 // ========================
-function setupImageZoom() {
+function setupImagePopup() {
   const modalHTML = document.createElement("div");
   modalHTML.id = "image-modal";
   modalHTML.style.cssText = `
     display:none; position:fixed; inset:0;
-    background: rgba(0,0,0,0.8);
+    background: rgba(0,0,0,0.85);
     justify-content:center; align-items:center;
     z-index:9999; cursor:pointer;
   `;
@@ -324,7 +324,7 @@ function setupImageZoom() {
     const modal = document.getElementById("image-modal");
     const modalImg = document.getElementById("modal-image");
 
-    if(e.target.matches(".zoom-img")) {
+    if(e.target.matches(".popup-img")) {
       modal.style.display = "flex";
       modalImg.src = e.target.src;
     } else if(e.target === modal || e.target === modalImg) {
@@ -340,6 +340,6 @@ function setupImageZoom() {
 document.addEventListener("DOMContentLoaded", () => {
   renderProducts();
   updateCartTotal();
-  setupImageZoom();
+  setupImagePopup();
 });
 </script>
