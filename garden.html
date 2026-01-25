@@ -171,7 +171,7 @@ footer {
 <script src="cart.js"></script>
 
 <script>
-/* ======= PRODUCTS ======= */
+// ====== GARDEN PRODUCTS DATA ======
 const gardenProducts = [
   {
     name: "Envirozyme Fertilizer",
@@ -206,84 +206,140 @@ const gardenProducts = [
   }
 ];
 
-/* ===== RENDER PRODUCTS ===== */
-function renderProducts() {
-    const container = document.getElementById("products-container");
-    container.innerHTML = "";
-
-    gardenProducts.forEach(prod => {
-        const card = document.createElement("div");
-        card.className = "product-card";
-
-        let currentPrice = prod.price || prod.options[0].price;
-        let currentStock = prod.stock || prod.options[0].stock;
-
-        let optionsHTML = "";
-        if (prod.options) {
-            optionsHTML = `
-                <select class="options-select">
-                    ${prod.options.map(opt =>
-                        `<option value="${opt.price}" data-stock="${opt.stock}">
-                            ${opt.label} - R${opt.price}
-                        </option>`
-                    ).join("")}
-                </select>
-            `;
-        }
-
-        card.innerHTML = `
-            <img src="${prod.image}" alt="${prod.name}">
-            <h3>${prod.name}</h3>
-            <p>${prod.description}</p>
-            <div class="price">R${currentPrice}</div>
-            ${optionsHTML}
-            <p class="stock">Stock: ${currentStock}</p>
-            <div class="qty-box">
-                <button class="minus">−</button>
-                <input type="number" min="1" value="1">
-                <button class="plus">+</button>
-            </div>
-            <button class="add-btn">Add to Cart</button>
-        `;
-
-        const qty = card.querySelector("input");
-        const priceDiv = card.querySelector(".price");
-        const stockDiv = card.querySelector(".stock");
-        const select = card.querySelector(".options-select");
-
-        card.querySelector(".minus").onclick = () => {
-            if (qty.value > 1) qty.value--;
-        };
-
-        card.querySelector(".plus").onclick = () => {
-            if (qty.value < currentStock) qty.value++;
-        };
-
-        if (select) {
-            select.onchange = () => {
-                currentPrice = parseInt(select.value);
-                currentStock = parseInt(select.selectedOptions[0].dataset.stock);
-                priceDiv.textContent = "R" + currentPrice;
-                stockDiv.textContent = "Stock: " + currentStock;
-                qty.value = 1;
-            };
-        }
-
-        card.querySelector(".add-btn").onclick = () => {
-            addToCart(
-                prod.name,
-                currentPrice,
-                parseInt(qty.value),
-                prod.image
-            );
-        };
-
-        container.appendChild(card);
-    });
+// ====== CART FUNCTIONS ======
+function getCart() {
+  return JSON.parse(localStorage.getItem("cart")) || [];
 }
 
-document.addEventListener("DOMContentLoaded", renderProducts);
-</script>
+function saveCart(cart) {
+  localStorage.setItem("cart", JSON.stringify(cart));
+  updateCartTotal();
+}
 
-</body>
-</html>
+function updateCartTotal() {
+  const cart = getCart();
+  let total = 0;
+  cart.forEach(item => total += item.price * item.quantity);
+  const el = document.getElementById("cart-total");
+  if (el) el.textContent = "R" + total.toFixed(2);
+}
+
+function addToCart(name, price, quantity = 1, image = "", pack = "") {
+  const cart = getCart();
+  const existing = cart.find(i => i.name === name && i.pack === pack);
+
+  if(existing) {
+    existing.quantity += quantity;
+  } else {
+    cart.push({ name, price, quantity, image, pack });
+  }
+  saveCart(cart);
+  alert(`${quantity} x "${name}" added to cart.`);
+}
+
+// ====== RENDER PRODUCTS ======
+function renderProducts() {
+  const container = document.getElementById("products-container");
+  if(!container) return;
+
+  container.innerHTML = "";
+
+  gardenProducts.forEach(prod => {
+    const card = document.createElement("div");
+    card.className = "product-card";
+
+    let initialPrice = prod.price || (prod.options ? prod.options[0].price : 0);
+    let currentStock = prod.stock || (prod.options ? prod.options[0].stock : 0);
+
+    let optionsHTML = "";
+    if(prod.options) {
+      optionsHTML = `<select class="options-select">
+        ${prod.options.map(opt => `<option value="${opt.price}" data-stock="${opt.stock}">${opt.label} - R${opt.price}</option>`).join("")}
+      </select>`;
+      currentStock = prod.options[0].stock;
+    }
+
+    card.innerHTML = `
+      <div class="image-wrap">
+        <img src="${prod.image}" alt="${prod.name}" class="zoom-img">
+      </div>
+      <h3>${prod.name}</h3>
+      <p>${prod.description}</p>
+      <div class="price">R${initialPrice}</div>
+      ${optionsHTML}
+      <p class="stock">Stock: ${currentStock}</p>
+      <div class="qty-box">
+        <button class="minus">−</button>
+        <input type="number" min="1" value="1">
+        <button class="plus">+</button>
+      </div>
+      <button class="add-btn">Add to Cart</button>
+    `;
+
+    const qtyInput = card.querySelector("input");
+    const priceDiv = card.querySelector(".price");
+    const stockDiv = card.querySelector(".stock");
+    const select = card.querySelector(".options-select");
+    const productImg = card.querySelector(".zoom-img");
+
+    // Quantity buttons
+    card.querySelector(".minus").onclick = () => { if(qtyInput.value > 1) qtyInput.value--; };
+    card.querySelector(".plus").onclick = () => { if(qtyInput.value < currentStock) qtyInput.value++; };
+
+    // Handle options change
+    if(select) {
+      select.onchange = () => {
+        const selectedPrice = parseInt(select.value);
+        const selectedStock = parseInt(select.options[select.selectedIndex].dataset.stock);
+        priceDiv.textContent = "R" + selectedPrice;
+        currentStock = selectedStock;
+        stockDiv.textContent = "Stock: " + currentStock;
+        if(qtyInput.value > currentStock) qtyInput.value = currentStock;
+      };
+    }
+
+    // Add to cart
+    card.querySelector(".add-btn").onclick = () => {
+      const qty = parseInt(qtyInput.value);
+      if(qty > currentStock) {
+        alert("Not enough stock available.");
+        return;
+      }
+      const price = select ? parseInt(select.value) : prod.price;
+      const name = select ? `${prod.name} (${select.options[select.selectedIndex].text})` : prod.name;
+      addToCart(name, price, qty, prod.image, select ? select.options[select.selectedIndex].text : "");
+    };
+
+    container.appendChild(card);
+  });
+}
+
+// ====== IMAGE ZOOM MODAL ======
+function setupImageZoom() {
+  const modalHTML = document.createElement("div");
+  modalHTML.id = "image-modal";
+  modalHTML.className = "image-modal";
+  modalHTML.innerHTML = `<img id="modal-image" alt="Zoomed Image">`;
+  document.body.appendChild(modalHTML);
+
+  document.addEventListener("click", e => {
+    const modal = document.getElementById("image-modal");
+    const modalImg = document.getElementById("modal-image");
+
+    if(e.target.matches(".zoom-img")) {
+      modal.style.display = "flex";
+      modalImg.src = e.target.src;
+    } else if(e.target === modal || e.target === modalImg) {
+      modal.style.display = "none";
+      modalImg.src = "";
+    }
+  });
+}
+
+// ====== INIT ======
+document.addEventListener("DOMContentLoaded", () => {
+  renderProducts();
+  updateCartTotal();
+  setupImageZoom();
+});
+</script>
