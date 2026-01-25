@@ -11,6 +11,9 @@
 html, body {
     height: 100%;
     margin: 0;
+    font-family: Arial, sans-serif;
+    background: url("background.jpg") center / cover no-repeat fixed;
+    color: white;
 }
 
 .page-wrapper {
@@ -19,10 +22,29 @@ html, body {
     flex-direction: column;
 }
 
+header.site-header {
+    background: rgba(47, 93, 58, 0.85);
+    padding: 15px 30px;
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+}
+
+.logo { height: 85px; }
+
+nav.nav a {
+    color: white;
+    text-decoration: none;
+    font-weight: 600;
+    margin-left: 20px;
+}
+
+nav.nav a:hover { opacity: 0.8; }
+
 main {
     flex: 1;
-    position: relative;
     padding: 40px;
+    position: relative;
 }
 
 main::before {
@@ -33,7 +55,6 @@ main::before {
     z-index: -1;
 }
 
-/* PRODUCT GRID */
 .products-container {
     max-width: 1200px;
     margin: auto;
@@ -56,78 +77,35 @@ main::before {
     height: 250px;
     object-fit: contain;
     margin-bottom: 10px;
+    cursor: pointer; /* clickable for popup */
 }
 
-.product-card h3 {
-    margin: 10px 0 5px;
-}
+.product-card h3 { margin: 10px 0 5px; }
+.product-card p { font-size: 14px; margin: 5px 0; }
+.price { font-size: 18px; font-weight: bold; margin: 10px 0; }
+.stock { font-size: 14px; margin-bottom: 10px; font-weight: bold; }
+.qty-box { display: flex; justify-content: center; align-items: center; gap: 6px; margin: 10px 0; }
+.qty-box button { padding: 5px 10px; font-size: 16px; cursor: pointer; }
+.qty-box input { width: 50px; text-align: center; }
+.add-btn { background: #1f4d30; color: white; border: none; padding: 10px 16px; border-radius: 6px; cursor: pointer; }
+.add-btn:hover { background: #163823; }
+footer { text-align: center; padding: 15px 0; background-color: rgba(47, 93, 58, 0.85); color: white; font-size: 14px; font-weight: bold; }
 
-.product-card p {
-    font-size: 14px;
-    margin: 5px 0;
-}
-
-.price {
-    font-size: 18px;
-    font-weight: bold;
-    margin: 10px 0;
-}
-
-.options-select {
-    margin: 10px 0;
-    padding: 5px;
-    font-size: 14px;
-}
-
-.stock {
-    font-size: 14px;
-    font-weight: bold;
-    color: #fff;
-    margin-bottom: 10px;
-}
-
-/* QUANTITY */
-.qty-box {
-    display: flex;
+/* IMAGE POPUP */
+#image-modal {
+    display: none;
+    position: fixed;
+    top:0; left:0; width:100%; height:100%;
+    background: rgba(0,0,0,0.8);
     justify-content: center;
     align-items: center;
-    gap: 6px;
-    margin: 10px 0;
+    z-index: 999;
 }
 
-.qty-box button {
-    padding: 5px 10px;
-    font-size: 16px;
-    cursor: pointer;
-}
-
-.qty-box input {
-    width: 50px;
-    text-align: center;
-}
-
-/* ADD BUTTON */
-.add-btn {
-    background: #1f4d30;
-    color: white;
-    border: none;
-    padding: 10px 16px;
-    border-radius: 6px;
-    cursor: pointer;
-}
-
-.add-btn:hover {
-    background: #163823;
-}
-
-/* FOOTER */
-footer {
-    text-align: center;
-    padding: 15px 0;
-    background-color: rgba(47, 93, 58, 0.85);
-    color: white;
-    font-size: 14px;
-    font-weight: bold;
+#image-modal img {
+    max-width: 90%;
+    max-height: 90%;
+    border-radius: 10px;
 }
 </style>
 </head>
@@ -137,26 +115,19 @@ footer {
 <div class="page-wrapper">
 
 <header class="site-header">
-    <div class="header-inner">
-        <a href="index.html">
-            <img src="logo.png" alt="Kurnalpi Organics Logo" class="logo">
-        </a>
-
-        <nav class="nav">
-            <a href="index.html">Home</a>
-            <a href="about.html">About</a>
-            <a href="products.html">Products</a>
-            <a href="contact.html">Contact Us</a>
-            <a href="cart.html">🛒 <span id="cart-total">R0.00</span></a>
-        </nav>
-    </div>
+    <a href="index.html"><img src="logo.png" class="logo" alt="Kurnalpi Organics"></a>
+    <nav class="nav">
+        <a href="index.html">Home</a>
+        <a href="about.html">About</a>
+        <a href="products.html">Products</a>
+        <a href="contact.html">Contact Us</a>
+        <a href="cart.html">🛒 <span id="cart-total">R0.00</span></a>
+    </nav>
 </header>
 
 <main>
     <h1 style="text-align:center;">Garden</h1>
-    <p style="text-align:center;">
-        Organic fertilizers, tools, and gardening essentials to grow your green space naturally.
-    </p>
+    <p style="text-align:center;">Organic fertilizers, tools, and gardening essentials to grow your green space naturally.</p>
 
     <div class="products-container" id="products-container"></div>
 </main>
@@ -165,13 +136,16 @@ footer {
     &copy; 2026 Kurnalpi Organics. All rights reserved.
 </footer>
 
+<!-- IMAGE POPUP -->
+<div id="image-modal" onclick="this.style.display='none'">
+    <img id="modal-image">
 </div>
 
-<!-- CART LOGIC -->
-<script src="cart.js"></script>
+</div>
 
+<script src="cart.js"></script>
 <script>
-// ====== GARDEN PRODUCTS DATA ======
+// ===== GARDEN PRODUCTS =====
 const gardenProducts = [
   {
     name: "Envirozyme Fertilizer",
@@ -206,7 +180,7 @@ const gardenProducts = [
   }
 ];
 
-// ====== CART FUNCTIONS ======
+// ===== CART FUNCTIONS =====
 function getCart() {
   return JSON.parse(localStorage.getItem("cart")) || [];
 }
@@ -219,9 +193,9 @@ function saveCart(cart) {
 function updateCartTotal() {
   const cart = getCart();
   let total = 0;
-  cart.forEach(item => total += item.price * item.quantity);
+  cart.forEach(i => total += i.price * i.quantity);
   const el = document.getElementById("cart-total");
-  if (el) el.textContent = "R" + total.toFixed(2);
+  if(el) el.textContent = "R" + total.toFixed(2);
 }
 
 function addToCart(name, price, quantity = 1, image = "", pack = "") {
@@ -237,11 +211,9 @@ function addToCart(name, price, quantity = 1, image = "", pack = "") {
   alert(`${quantity} x "${name}" added to cart.`);
 }
 
-// ====== RENDER PRODUCTS ======
+// ===== RENDER PRODUCTS =====
 function renderProducts() {
   const container = document.getElementById("products-container");
-  if(!container) return;
-
   container.innerHTML = "";
 
   gardenProducts.forEach(prod => {
@@ -260,9 +232,7 @@ function renderProducts() {
     }
 
     card.innerHTML = `
-      <div class="image-wrap">
-        <img src="${prod.image}" alt="${prod.name}" class="zoom-img">
-      </div>
+      <img src="${prod.image}" alt="${prod.name}" class="zoom-img">
       <h3>${prod.name}</h3>
       <p>${prod.description}</p>
       <div class="price">R${initialPrice}</div>
@@ -282,11 +252,19 @@ function renderProducts() {
     const select = card.querySelector(".options-select");
     const productImg = card.querySelector(".zoom-img");
 
-    // Quantity buttons
+    // CLICK IMAGE TO POPUP
+    productImg.onclick = () => {
+      const modal = document.getElementById("image-modal");
+      const modalImg = document.getElementById("modal-image");
+      modalImg.src = productImg.src;
+      modal.style.display = "flex";
+    };
+
+    // QUANTITY BUTTONS
     card.querySelector(".minus").onclick = () => { if(qtyInput.value > 1) qtyInput.value--; };
     card.querySelector(".plus").onclick = () => { if(qtyInput.value < currentStock) qtyInput.value++; };
 
-    // Handle options change
+    // OPTIONS CHANGE
     if(select) {
       select.onchange = () => {
         const selectedPrice = parseInt(select.value);
@@ -298,10 +276,10 @@ function renderProducts() {
       };
     }
 
-    // Add to cart
+    // ADD TO CART
     card.querySelector(".add-btn").onclick = () => {
       const qty = parseInt(qtyInput.value);
-      if(qty > currentStock) {
+      if(qty > currentStock){
         alert("Not enough stock available.");
         return;
       }
@@ -314,32 +292,12 @@ function renderProducts() {
   });
 }
 
-// ====== IMAGE ZOOM MODAL ======
-function setupImageZoom() {
-  const modalHTML = document.createElement("div");
-  modalHTML.id = "image-modal";
-  modalHTML.className = "image-modal";
-  modalHTML.innerHTML = `<img id="modal-image" alt="Zoomed Image">`;
-  document.body.appendChild(modalHTML);
-
-  document.addEventListener("click", e => {
-    const modal = document.getElementById("image-modal");
-    const modalImg = document.getElementById("modal-image");
-
-    if(e.target.matches(".zoom-img")) {
-      modal.style.display = "flex";
-      modalImg.src = e.target.src;
-    } else if(e.target === modal || e.target === modalImg) {
-      modal.style.display = "none";
-      modalImg.src = "";
-    }
-  });
-}
-
-// ====== INIT ======
+// ===== INIT =====
 document.addEventListener("DOMContentLoaded", () => {
   renderProducts();
   updateCartTotal();
-  setupImageZoom();
 });
 </script>
+
+</body>
+</html>
